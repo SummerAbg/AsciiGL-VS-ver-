@@ -38,14 +38,23 @@ void AsciiBasicLayerMngr::insertLayer(int layerCnt, const DataType &layers) {
 }
 
 AsciiBasicCanvas AsciiBasicLayerMngr::getCanvas() const {
-  if (layers.size() <= 0)
+  static AsciiBasicLayerMngr bffrMngr;
+  static AsciiBasicCanvas bffrCnvs;
+
+  if (layers.size() <= 0) {
     return AsciiBasicCanvas();
+  } else if (*this == bffrMngr) {
+    return bffrCnvs;
+  }
 
   AsciiBasicCanvas result = layers[0];
   for (const auto &index : layers) {
     const Coordinate2D coord = index.getCoordinate();
     result = overlapCanvas(index, result, coord);
   }
+
+  bffrMngr = *this;
+  bffrCnvs = result;
 
   return result;
 }
@@ -85,6 +94,20 @@ const AsciiBasicLayer &AsciiBasicLayerMngr::operator[](int index) const {
   if (index < 0 || index >= layers.size())
     return layers[0];
   return layers[index];
+}
+
+bool AsciiBasicLayerMngr::operator==(const AsciiBasicLayerMngr &mngr) const {
+  if (layers == mngr.getLayers())
+    return true;
+  return false;
+}
+
+bool AsciiBasicLayerMngr::operator!=(const AsciiBasicLayerMngr &mngr) const {
+  return !(layers == mngr.getLayers());
+}
+
+AsciiBasicLayerMngr::DataType AsciiBasicLayerMngr::getLayers() const {
+  return layers;
 }
 
 bool AsciiBasicLayerMngr::isExistLayer(const std::string &name) const {

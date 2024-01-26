@@ -7,6 +7,8 @@ class AsciiBasicObject {
 public:
   // 输出信息
   virtual void info() const = 0;
+  // 获取字符串
+  virtual std::string toString() const = 0;
 
   // 序列化对象
   friend std::string serialize(const AsciiBasicObject *obj);

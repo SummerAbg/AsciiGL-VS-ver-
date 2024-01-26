@@ -19,6 +19,8 @@ public:
 
   // 输出信息(DEBUG)
   void info() const;
+  // 获取画布组成的字符串
+  std::string toString() const;
 
   // 设置画布中指定坐标的数据
   void setAsciiBasicCanvasData(Coordinate2D coord,
@@ -26,8 +28,8 @@ public:
   // 获取画布中指定坐标的数据(失败时返回空字符串)
   AsciiBasicString getAsciiBasicCanvasData(Coordinate2D coord) const;
 
-  // 获取画布组成的字符串
-  std::string getString() const;
+  // 获取画布组成的AsciiBasicString字符串
+  AsciiBasicString getAsciiBasicString() const;
 
   // 获取画布长度
   int getLength() const { return length; }
@@ -43,14 +45,18 @@ public:
   // 以文件的形式加载画布
   void load(const std::string &canvasFilePath);
 
-  // 清空画布数据
-  void clear();
+  // 清空画布数据(flag为真时,对象数据清空,flag为假时，对象恢复默认数据)
+  void clear(bool flag = true);
 
   // 展示画布
   void show() const;
 
   // 判断坐标是否合法
   bool isCoordinateLegality(Coordinate2D coord) const;
+
+  // 重载运算符
+  virtual bool operator==(const AsciiBasicCanvas &canvas) const;
+  virtual bool operator!=(const AsciiBasicCanvas &canvas) const;
 
 private:
   std::string getSerializeStr() const;

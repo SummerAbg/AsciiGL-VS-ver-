@@ -21,6 +21,10 @@ public:
   // 获取名称
   std::string getName() const { return name; }
 
+  // 重载运算符
+  virtual bool operator==(const AsciiBasicLayer &layer) const;
+  virtual bool operator!=(const AsciiBasicLayer &layer) const;
+
 private:
   Coordinate2D coord; // 坐标
   std::string name;   // 名称

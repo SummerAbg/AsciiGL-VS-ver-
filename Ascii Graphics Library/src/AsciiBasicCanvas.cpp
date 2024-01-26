@@ -30,6 +30,25 @@ void AsciiBasicCanvas::info() const {
             << "DefaultFill:" << defaultFill << std::endl
             << "Size:" << bDatas.size() << std::endl
             << "BlockLength:" << blockLength << std::endl;
+
+  for (int i = 0; i < width; i++) {
+    for (int j = 0; j < length; j++) {
+      const auto block = bDatas[i * length + j];
+      for (const auto &index : block) {
+        std::cout << "(" << index.getColor() << ")";
+      }
+    }
+    std::cout << std::endl;
+  }
+}
+
+std::string AsciiBasicCanvas::toString() const {
+  std::string result;
+
+  AsciiBasicString buffer = this->getAsciiBasicString();
+  result = buffer.toString();
+
+  return result;
 }
 
 void AsciiBasicCanvas::setAsciiBasicCanvasData(Coordinate2D coord,
@@ -65,35 +84,31 @@ AsciiBasicCanvas::getAsciiBasicCanvasData(Coordinate2D coord) const {
   return bDatas[coord.y * length + coord.x];
 }
 
-std::string AsciiBasicCanvas::getString() const {
-  std::string result;
+AsciiBasicString AsciiBasicCanvas::getAsciiBasicString() const {
+  AsciiBasicString result;
 
   for (int i = 0; i < width; i++) {
     for (int j = 0; j < length; j++) {
-      auto blockData = bDatas[i * length + j];
-      auto trprData = blockData.getTrprData();
-
-      for (int k = 0; k < blockData.size(); k++) {
-        bool isTrpr = trprData[k];
-
-        if (isTrpr)
-          result += AsciiBasicChar::getTrprChr();
-        else
-          result += blockData[k].getChr();
-      }
+      result += bDatas[i * length + j];
     }
-    result += (i == width - 1) ? "" : "\n";
+    result += AsciiBasicString("\n", false, AsciiBasicChar::getDefaultColor());
   }
   return result;
 }
 
-void AsciiBasicCanvas::clear() { *this = AsciiBasicCanvas(); }
+void AsciiBasicCanvas::clear(bool flag) {
+  if (flag) {
+    *this = AsciiBasicCanvas();
+  } else {
+    this->bDatas = BlockData(length * width, defaultFill);
+  }
+}
 
 void AsciiBasicCanvas::save(const std::string &canvasFilePath) const {
   std::ofstream outFile(canvasFilePath.c_str());
 
   if (!outFile.is_open())
-    throw AsciiBasicError("AsciiBasicCanvas::save()", FileNotExist);
+    throw AsciiBasicError(__FUNC__, FileNotExist);
 
   outFile << serialize(this);
 
@@ -104,7 +119,7 @@ void AsciiBasicCanvas::load(const std::string &canvasFilePath) {
   std::ifstream inFile(canvasFilePath.c_str());
 
   if (!inFile.is_open())
-    throw AsciiBasicError("AsciiBasicCanvas::load()", FileNotExist);
+    throw AsciiBasicError(__FUNC__, FileNotExist);
 
   *this = AsciiBasicCanvas();
 
@@ -119,12 +134,28 @@ void AsciiBasicCanvas::load(const std::string &canvasFilePath) {
   inFile.close();
 }
 
-void AsciiBasicCanvas::show() const { std::cout << this->getString(); }
+void AsciiBasicCanvas::show() const {
+  std::cout << this->getAsciiBasicString();
+}
 
 bool AsciiBasicCanvas::isCoordinateLegality(Coordinate2D coord) const {
   if (coord.x >= 0 && coord.x < length && coord.y >= 0 && coord.y < width)
     return true;
   return false;
+}
+
+bool AsciiBasicCanvas::operator==(const AsciiBasicCanvas &canvas) const {
+  if (this->length == canvas.getLength() && this->width == canvas.getWidth() &&
+      this->blockLength == canvas.getBlockLength() &&
+      this->defaultFill == canvas.getFill() &&
+      this->bDatas == BlockData(canvas.begin(), canvas.end())) {
+    return true;
+  }
+  return false;
+}
+
+bool AsciiBasicCanvas::operator!=(const AsciiBasicCanvas &canvas) const {
+  return !(*this == canvas);
 }
 
 std::string AsciiBasicCanvas::getSerializeStr() const {
@@ -135,9 +166,29 @@ std::string AsciiBasicCanvas::getSerializeStr() const {
 
   result += serialize(&defaultFill) + "\n";
 
-  for (const auto &index : bDatas) {
-    const auto buffer = serialize(&index) + "\n";
-    result += buffer;
+  result += this->toString();
+  for (int i = 0; i < width; i++) {
+    for (int j = 0; j < length; j++) {
+      const auto trprData = bDatas[i * length + j].getTrprData();
+
+      for (const auto &index : trprData) {
+        result += std::to_string(index);
+      }
+    }
+    result += "\n";
+  }
+
+  for (int i = 0; i < width; i++) {
+    for (int j = 0; j < length; j++) {
+      const auto colorData = bDatas[i * length + j].getColorData();
+
+      for (const auto &index : colorData) {
+        result += std::to_string(index.r) + ",";
+        result += std::to_string(index.g) + ",";
+        result += std::to_string(index.b) + ";";
+      }
+    }
+    result += "\n";
   }
   return result;
 }
@@ -146,18 +197,62 @@ void AsciiBasicCanvas::loadSerializeStr(const std::string &str) {
   const auto tokens = split(str, '\n');
 
   if (tokens.size() < 4) {
-    throw AsciiBasicError("AsciiBasicCanvas::loadSerializeStr()",
-                          FileFormatError);
+    throw AsciiBasicError(__FUNC__, FileFormatError);
   }
 
-  this->length = atoi(tokens[0].c_str());
-  this->width = atoi(tokens[1].c_str());
-  this->blockLength = atoi(tokens[2].c_str());
+  this->length = stringToInt(tokens[0]);
+  this->width = stringToInt(tokens[1]);
+  this->blockLength = stringToInt(tokens[2]);
+
+  // 是否有完整颜色数据
+  bool clr_flag = (tokens.size() == 4 + width * 3);
+
   deserialize(&defaultFill, tokens[3]);
 
-  for (int i = 4; i < tokens.size(); i++) {
-    AsciiBasicString str;
-    deserialize(&str, tokens[i]);
-    bDatas.push_back(str);
+  // 颜色块
+  std::vector<std::string> colorBlocks;
+
+  for (int fileLine = 4; fileLine < width + 4; fileLine++) {
+    if (clr_flag)
+      colorBlocks = split(tokens[fileLine + width * 2], ';');
+
+    for (int i = 0; i < length; i++) {
+
+      std::string text;
+      TrprData trprData;
+      ColorData color;
+
+      for (int j = 0; j < blockLength; j++) {
+
+        const int index = i * blockLength + j;
+
+        text += tokens[fileLine][index];
+        ////////////////////////////////////////////////text
+        bool isTrpr = (tokens.size() >= 4 + width * 2)
+                          ? charToBool(tokens[fileLine + width][index])
+                          : false;
+        trprData.push_back(isTrpr);
+        ////////////////////////////////////////////////trprData
+
+        ColorRGB clr;
+
+        if (clr_flag) {
+          const auto colorVals = split(colorBlocks[index], ',');
+
+          const int r = stringToInt(colorVals[0]);
+          const int g = stringToInt(colorVals[1]);
+          const int b = stringToInt(colorVals[2]);
+
+          clr = {r, g, b};
+        } else {
+          clr = AsciiBasicChar::getDefaultColor();
+        }
+
+        color.push_back(clr);
+        ////////////////////////////////////////////////color
+      }
+      AsciiBasicString data = {text, color, trprData};
+      bDatas.push_back(data);
+    }
   }
 }

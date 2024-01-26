@@ -80,14 +80,13 @@ void setText(AsciiBasicCanvas &canvas, Coordinate2D coord,
 }
 
 void setBorder(AsciiBasicCanvas &canvas, const AsciiBasicString &str) {
-  for (int i = 0; i < canvas.getLength(); i++) {
-    canvas.setAsciiBasicCanvasData({i, 0}, str);
-    canvas.setAsciiBasicCanvasData({i, canvas.getWidth() - 1}, str);
-  }
-  for (int i = 1; i < canvas.getWidth() - 1; i++) {
-    canvas.setAsciiBasicCanvasData({0, i}, str);
-    canvas.setAsciiBasicCanvasData({canvas.getLength() - 1, i}, str);
-  }
+  const int cLength = canvas.getLength();
+  const int cWidth = canvas.getWidth();
+
+  setLine(canvas, {0, 0}, {cLength - 1, 0}, str);
+  setLine(canvas, {0, cWidth - 1}, {cLength - 1, cWidth - 1}, str);
+  setLine(canvas, {0, 0}, {0, cWidth - 1}, str);
+  setLine(canvas, {cLength - 1, 0}, {cLength - 1, cWidth - 1}, str);
 }
 
 std::vector<Point2D> compareCanvas(const AsciiBasicCanvas &target,
@@ -107,12 +106,38 @@ std::vector<Point2D> compareCanvas(const AsciiBasicCanvas &target,
 }
 
 void setLine(AsciiBasicCanvas &canvas, Coordinate2D coord1, Coordinate2D coord2,
-             const AsciiBasicString &str) {
-  /* const int x1 = abs(coord1.x);
-  const int x2 = abs(coord2.x);
-  const int y1 = abs(coord1.y);
-  const int y2 = abs(coord2.y);*/
+             const AsciiBasicString &str, int level) {
+  const int x1 = coord1.x;
+  const int x2 = coord2.x;
+  const int y1 = coord1.y;
+  const int y2 = coord2.y;
+
+  if (x1 == x2) {
+
+    for (int y = y1; y <= y2; y++) {
+      canvas.setAsciiBasicCanvasData({x1, y}, str);
+    }
+  } else if (y1 == y2) {
+
+    for (int x = x1; x <= x2; x++) {
+      canvas.setAsciiBasicCanvasData({x, y1}, str);
+    }
+  } else {
+
+    const double targetX = abs(x2 - x1) + 1;
+    const double deltaX = pow(10, -level);
+
+    for (double i = 0; i < targetX; i += deltaX) {
+      const Coordinate2D coord = {
+          static_cast<int>((coord1.x < coord2.x) ? x1 + i : x1 - i),
+          static_cast<int>(y1 + getY(coord1, coord2, i))};
+
+      canvas.setAsciiBasicCanvasData(coord, str);
+    }
+  }
 }
+
+#if defined(_WIN64) || defined(_WIN32)
 
 void WinAPIDraw(const AsciiBasicCanvas &canvas) {
   static AsciiBasicCanvas canvBuffer;
@@ -121,9 +146,12 @@ void WinAPIDraw(const AsciiBasicCanvas &canvas) {
   const auto dffrntPoints = compareCanvas(canvas, canvBuffer);
 
   for (const auto &index : dffrntPoints) {
-    COORD coord = {(short)(index.x * canvas.getBlockLength()), (short)index.y};
+    const COORD coord = {(short)(index.x * canvas.getBlockLength()),
+                         (short)index.y};
     SetConsoleCursorPosition(hndl, coord);
     std::cout << canvas.getAsciiBasicCanvasData(index);
   }
   canvBuffer = canvas;
 }
+
+#endif

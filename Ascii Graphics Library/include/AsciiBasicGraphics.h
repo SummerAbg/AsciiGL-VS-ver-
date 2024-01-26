@@ -23,9 +23,12 @@ void setBorder(AsciiBasicCanvas &canvas, const AsciiBasicString &str);
 std::vector<Point2D> compareCanvas(const AsciiBasicCanvas &target,
                                    const AsciiBasicCanvas &canvas);
 
-// 绘制线条(废用)
+// 绘制线条(level为绘制精准度，越大越好，level不得小于-15)
 void setLine(AsciiBasicCanvas &canvas, Coordinate2D coord1, Coordinate2D coord2,
-             const AsciiBasicString &str);
+             const AsciiBasicString &str, int level = 1);
 
+#if defined(_WIN64) || defined(_WIN32)
 // 利用WinAPI输出画布(可大大提高性能)
 void WinAPIDraw(const AsciiBasicCanvas &canvas);
+
+#endif

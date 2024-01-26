@@ -37,9 +37,15 @@ public:
   // 下标运算符重载(获取指定名称的图层)[失败时返回第一个图层]
   const AsciiBasicLayer &operator[](const std::string &name) const;
   const AsciiBasicLayer &operator[](int index) const;
+  // 下标运算符重载(==)
+  bool operator==(const AsciiBasicLayerMngr &mngr) const;
+  bool operator!=(const AsciiBasicLayerMngr &mngr) const;
 
   // 获取管理器图层数
-  int size() const { return layers.size(); }
+  int size() const { return static_cast<int>(layers.size()); }
+
+  // 获取管理器的所有图层
+  DataType getLayers() const;
 
   // 判断是否存在指定图层
   bool isExistLayer(const std::string &name) const;

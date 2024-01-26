@@ -17,3 +17,15 @@ AsciiBasicLayer::AsciiBasicLayer(const AsciiBasicCanvas &canvas,
   this->coord = coord;
   this->name = name;
 }
+
+bool AsciiBasicLayer::operator==(const AsciiBasicLayer &layer) const {
+  if ((AsciiBasicCanvas)(*this) == (AsciiBasicCanvas)layer &&
+      this->coord == layer.getCoordinate() && this->name == layer.getName()) {
+    return true;
+  }
+  return false;
+}
+
+bool AsciiBasicLayer::operator!=(const AsciiBasicLayer &layer) const {
+  return !(*this == layer);
+}

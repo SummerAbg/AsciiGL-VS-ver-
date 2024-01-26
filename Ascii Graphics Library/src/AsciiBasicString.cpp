@@ -1,29 +1,33 @@
 #include "AsciiBasicString.h"
 
-AsciiBasicString::AsciiBasicString(const char *str, const TrprData &trprData) {
+AsciiBasicString::AsciiBasicString(const char *str, bool isTrpr,
+                                   const ColorRGB clr) {
+  const std::string text = str;
+  const TrprData trpr(text.size(), isTrpr);
+  const ColorData color(text.size(), clr);
+
+  *this = AsciiBasicString(str, color, trpr);
+}
+
+AsciiBasicString::AsciiBasicString(const std::string &str, bool isTrpr,
+                                   const ColorRGB clr) {
+  *this = AsciiBasicString(str.c_str(), isTrpr, clr);
+}
+
+AsciiBasicString::AsciiBasicString(const char *str, const ColorData &clr,
+                                   const TrprData &trpr) {
   const std::string text = str;
 
   for (int i = 0; i < text.size(); i++) {
-    const AsciiBasicChar chr = {text[i], trprData[i]};
+    const AsciiBasicChar chr = {text[i], clr[i], trpr[i]};
 
     this->text.push_back(chr);
   }
 }
 
-AsciiBasicString::AsciiBasicString(const char *str, bool isTrpr) {
-  const std::string text = str;
-  const TrprData trprData(text.size(), isTrpr);
-
-  *this = AsciiBasicString(str, trprData);
-}
-
-AsciiBasicString::AsciiBasicString(const std::string &str,
-                                   const TrprData &trprData) {
-  *this = AsciiBasicString(str.c_str(), trprData);
-}
-
-AsciiBasicString::AsciiBasicString(const std::string &str, bool isTrpr) {
-  *this = AsciiBasicString(str.c_str(), isTrpr);
+AsciiBasicString::AsciiBasicString(const std::string &str, const ColorData &clr,
+                                   const TrprData &trpr) {
+  *this = AsciiBasicString(str.c_str(), clr, trpr);
 }
 
 AsciiBasicString::AsciiBasicString(const AsciiBasicChar &chr) {
@@ -41,7 +45,8 @@ void AsciiBasicString::info() const {
 
 bool AsciiBasicString::operator==(const AsciiBasicString &str) const {
   if (this->toString() == str.toString() &&
-      str.getTrprData() == this->getTrprData())
+      this->getTrprData() == str.getTrprData() &&
+      this->getColorData() == str.getColorData())
     return true;
   return false;
 }
@@ -62,12 +67,16 @@ AsciiBasicString AsciiBasicString::operator+=(const AsciiBasicChar &chr) {
 AsciiBasicString
 AsciiBasicString::operator+(const AsciiBasicString &str) const {
   const std::string text = this->toString() + str.toString();
-  const auto pTrprData = str.getTrprData();
+  const TrprData obj_Trpr = str.getTrprData();
+  const ColorData obj_clr = str.getColorData();
 
-  auto trprData = this->getTrprData();
-  trprData.insert(trprData.end(), pTrprData.begin(), pTrprData.end());
+  TrprData trpr = this->getTrprData();
+  ColorData color = this->getColorData();
 
-  const AsciiBasicString result(text, trprData);
+  trpr.insert(trpr.end(), obj_Trpr.begin(), obj_Trpr.end());
+  color.insert(color.end(), obj_clr.begin(), obj_clr.end());
+
+  const AsciiBasicString result(text, color, trpr);
 
   return result;
 }
@@ -80,21 +89,21 @@ AsciiBasicString AsciiBasicString::operator+(const AsciiBasicChar &chr) const {
 
 AsciiBasicChar &AsciiBasicString::operator[](int index) {
   if (index < 0 || index >= text.size()) {
-    throw AsciiBasicError("AsciiBasicString::operator[]", ArrayOverflow);
+    throw AsciiBasicError(__FUNC__, ArrayOverflow);
   }
   return text[index];
 }
 
 const AsciiBasicChar &AsciiBasicString::operator[](int index) const {
   if (index < 0 || index >= text.size()) {
-    throw AsciiBasicError("AsciiBasicString::operator[] const", ArrayOverflow);
+    throw AsciiBasicError(__FUNC__, ArrayOverflow);
   }
   return text[index];
 }
 
 void AsciiBasicString::del(int index) {
   if (index < 0 || index >= text.size()) {
-    throw AsciiBasicError("AsciiBasicString::del()", ArrayOverflow);
+    throw AsciiBasicError(__FUNC__, ArrayOverflow);
   }
   text.erase(text.begin() + index);
 }
@@ -102,12 +111,12 @@ void AsciiBasicString::del(int index) {
 std::string AsciiBasicString::toString() const {
   std::string result;
   for (const auto &index : text) {
-    result += std::string(1, index.getChr());
+    result += index.toString();
   }
   return result;
 }
 
-AsciiBasicString::TrprData AsciiBasicString::getTrprData() const {
+TrprData AsciiBasicString::getTrprData() const {
   TrprData result;
   for (const auto &index : text) {
     result.push_back(index.isTrpr());
@@ -115,29 +124,38 @@ AsciiBasicString::TrprData AsciiBasicString::getTrprData() const {
   return result;
 }
 
+ColorData AsciiBasicString::getColorData() const {
+  ColorData result;
+  for (const auto &index : text) {
+    result.push_back(index.getColor());
+  }
+  return result;
+}
+
 std::string AsciiBasicString::getSerializeStr() const {
   std::string result;
   for (const auto &index : text) {
-    const auto buffer = serialize(&index);
-    result += buffer;
+    result += serialize(&index) + ";";
   }
   return result;
 }
 
 void AsciiBasicString::loadSerializeStr(const std::string &str) {
-  for (int i = 0; i < str.size(); i += 2) {
+  const auto tokens = split(str, ';');
+
+  for (int i = 0; i < tokens.size(); i += 2) {
     AsciiBasicChar chr;
-    const std::string data =
-        std::string(1, str[i]) + std::string(1, str[i + 1]);
-    deserialize(&chr, data);
+    const std::string chr_data = tokens[i] + ";" + tokens[i + 1];
+    deserialize(&chr, chr_data);
     this->text.push_back(chr);
   }
 }
 
 std::ostream &operator<<(std::ostream &output, const AsciiBasicString &str) {
-  for (const auto &index : str) {
-    output << index;
+  for (const auto &chr : str) {
+    output << chr;
   }
+  output << AsciiBasicChar('\0', AsciiBasicChar::getDefaultColor());
   return output;
 }
 

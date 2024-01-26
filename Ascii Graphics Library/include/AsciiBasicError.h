@@ -16,11 +16,13 @@ public:
   // 构造基本错误
   AsciiBasicError();
   AsciiBasicError(const std::string &where, const BasicError &error);
+  AsciiBasicError(const std::string &where, const std::string &error_str);
 
   // 输出错误
   void printError() const;
 
 private:
-  std::string where; // 哪里出错
-  BasicError error;  // 错误类型
+  std::string where;     // 哪里出错
+  BasicError error;      // 错误类型
+  std::string error_str; // 错误字符串
 };

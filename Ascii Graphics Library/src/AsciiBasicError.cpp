@@ -8,6 +8,12 @@ AsciiBasicError::AsciiBasicError(const std::string &where,
   this->error = error;
 }
 
+AsciiBasicError::AsciiBasicError(const std::string &where,
+                                 const std::string &error_str) {
+  this->where = where;
+  this->error_str = error;
+}
+
 void AsciiBasicError::printError() const {
   std::cout << "在 " << where << " 中出现了意外的 ";
 
@@ -29,7 +35,7 @@ void AsciiBasicError::printError() const {
     break;
 
   default:
-    std::cout << "系统错误!";
+    std::cout << error_str;
     break;
   }
   std::cout << std::endl;
