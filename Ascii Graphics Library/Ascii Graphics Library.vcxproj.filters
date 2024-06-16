@@ -45,9 +45,6 @@
     <ClCompile Include="src\AsciiBasic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AsciiBasic.h">
@@ -78,9 +75,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="include\AsciiGLUntils.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="include\DebugLibrary.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

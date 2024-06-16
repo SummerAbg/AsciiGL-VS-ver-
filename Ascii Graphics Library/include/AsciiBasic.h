@@ -21,6 +21,9 @@ struct Coordinate2D {
   int x;
   int y;
 
+  Coordinate2D();
+  Coordinate2D(int x, int y);
+
   bool operator==(Coordinate2D coord) const;
   bool operator!=(Coordinate2D coord) const;
 };

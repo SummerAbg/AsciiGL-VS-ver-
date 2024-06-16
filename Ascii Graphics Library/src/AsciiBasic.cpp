@@ -1,6 +1,16 @@
 #include "AsciiBasic.h"
 #include <AsciiBasicChar.h>
 
+Coordinate2D::Coordinate2D() {
+  this->x = 0;
+  this->y = 0;
+}
+
+Coordinate2D::Coordinate2D(int x, int y) {
+  this->x = x;
+  this->y = y;
+}
+
 bool Coordinate2D::operator==(Coordinate2D coord) const {
   if (this->x == coord.x && this->y == coord.y)
     return true;

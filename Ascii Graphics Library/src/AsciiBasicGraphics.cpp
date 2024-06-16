@@ -79,6 +79,35 @@ void setText(AsciiBasicCanvas &canvas, Coordinate2D coord,
   }
 }
 
+void setText(AsciiBasicLayer &layer, Coordinate2D coord,
+             const AsciiBasicString &text) {
+  const int length = text.size();
+  const int width = 1;
+  const std::string name = layer.getName();
+
+  AsciiBasicCanvas canvas(length, width);
+  setText(canvas, {0, 0}, text);
+
+  layer = AsciiBasicLayer(canvas, coord, name);
+}
+
+void setText(AsciiBasicLayerMngr &mngr, Coordinate2D coord,
+             const AsciiBasicString &text, const std::string &layerName) {
+  const int length = text.size();
+  const int width = 1;
+
+  AsciiBasicLayer textLayer;
+  textLayer.setName(layerName);
+
+  setText(textLayer, coord, text);
+
+  if (mngr.isExistLayer(layerName)) {
+    mngr[layerName] = textLayer;
+  } else {
+    mngr.addLayer(textLayer);
+  }
+}
+
 void setBorder(AsciiBasicCanvas &canvas, const AsciiBasicString &str) {
   const int cLength = canvas.getLength();
   const int cWidth = canvas.getWidth();
@@ -137,11 +166,32 @@ void setLine(AsciiBasicCanvas &canvas, Coordinate2D coord1, Coordinate2D coord2,
   }
 }
 
+void reflect(AsciiBasicCanvas &canvas) {
+  const int width = canvas.getWidth();
+  const int indexWidth = (width / 2 - ((width == 0) ? 1 : 0));
+
+  for (int i = 0; i < indexWidth; i++) {
+    for (int j = 0; j < canvas.getLength(); j++) {
+      const Coordinate2D reflectCoord = {j, i};
+      const Coordinate2D coord = {j, canvas.getWidth() - i - 1};
+
+      const auto reflectedStr = canvas.getAsciiBasicCanvasData(reflectCoord);
+      const auto str = canvas.getAsciiBasicCanvasData(coord);
+
+      canvas.setAsciiBasicCanvasData(reflectCoord, str);
+      canvas.setAsciiBasicCanvasData(coord, reflectedStr);
+    }
+  }
+}
+
 #if defined(_WIN64) || defined(_WIN32)
 
-void WinAPIDraw(const AsciiBasicCanvas &canvas) {
+void WinAPIDraw(const AsciiBasicCanvas &canvas, bool isClean) {
   static AsciiBasicCanvas canvBuffer;
   HANDLE hndl = GetStdHandle(STD_OUTPUT_HANDLE);
+
+  if (isClean)
+    canvBuffer = AsciiBasicCanvas();
 
   const auto dffrntPoints = compareCanvas(canvas, canvBuffer);
 
@@ -152,6 +202,16 @@ void WinAPIDraw(const AsciiBasicCanvas &canvas) {
     std::cout << canvas.getAsciiBasicCanvasData(index);
   }
   canvBuffer = canvas;
+}
+
+void hideCursor() {
+  HANDLE hndl = GetStdHandle(STD_OUTPUT_HANDLE);
+  CONSOLE_CURSOR_INFO CursorInfo;
+
+  GetConsoleCursorInfo(hndl, &CursorInfo);
+  CursorInfo.bVisible = false;
+
+  SetConsoleCursorInfo(hndl, &CursorInfo);
 }
 
 #endif

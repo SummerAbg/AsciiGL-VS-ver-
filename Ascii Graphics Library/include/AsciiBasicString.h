@@ -323,4 +323,4 @@ std::istream &operator>>(std::istream &input, BasicString<CharType> &str) {
   return input;
 }*/
 
-const AsciiBasicString TRPRSTR = {"  ", true, ASCII_WORD_COLOR_BLACK};
+const AsciiBasicString TRPRSTR = {" ", true, ASCII_WORD_COLOR_GREY};

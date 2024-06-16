@@ -80,7 +80,7 @@ void AsciiBasicCanvas::setAsciiBasicCanvasData(Coordinate2D coord,
 AsciiBasicString
 AsciiBasicCanvas::getAsciiBasicCanvasData(Coordinate2D coord) const {
   if (!isCoordinateLegality(coord))
-    return "";
+    return AsciiBasicString();
   return bDatas[coord.y * length + coord.x];
 }
 

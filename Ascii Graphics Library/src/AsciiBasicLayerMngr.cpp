@@ -2,7 +2,7 @@
 #include "AsciiBasicGraphics.h"
 
 AsciiBasicLayerMngr::AsciiBasicLayerMngr(int length, int width) {
-  AsciiBasicCanvas canvas = {length, width};
+  AsciiBasicCanvas canvas(length, width);
   AsciiBasicLayer layer = {canvas, {0, 0}, "background_layer"};
   layers.push_back(layer);
 }
@@ -49,7 +49,9 @@ AsciiBasicCanvas AsciiBasicLayerMngr::getCanvas() const {
 
   AsciiBasicCanvas result = layers[0];
   for (const auto &index : layers) {
-    const Coordinate2D coord = index.getCoordinate();
+    Coordinate2D coord = index.getCoordinate();
+    coord.x -= index.getCenterPoint().x;
+    coord.y -= index.getCenterPoint().y;
     result = overlapCanvas(index, result, coord);
   }
 

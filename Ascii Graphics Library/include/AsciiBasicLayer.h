@@ -6,7 +6,7 @@
 class AsciiBasicLayer : public AsciiBasicCanvas {
 public:
   // 构造字符基本图层
-  AsciiBasicLayer();
+  AsciiBasicLayer() {}
   AsciiBasicLayer(const AsciiBasicCanvas &canvas, Coordinate2D coord);
   AsciiBasicLayer(const AsciiBasicCanvas &canvas, Coordinate2D coord,
                   const std::string &name);
@@ -15,6 +15,11 @@ public:
   void setCoordinate(Coordinate2D coord) { this->coord = coord; }
   // 获取图层中画布的坐标
   Coordinate2D getCoordinate() const { return coord; }
+
+  //设置图层中画布的中心点坐标
+  void setCenterPoint(Coordinate2D coord) { this->centerPoint = coord; }
+  //获取图层中画布的中心点坐标
+  Coordinate2D getCenterPoint() const { return centerPoint; }
 
   // 设置名称
   void setName(const std::string &name) { this->name = name; }
@@ -26,6 +31,7 @@ public:
   virtual bool operator!=(const AsciiBasicLayer &layer) const;
 
 private:
-  Coordinate2D coord; // 坐标
-  std::string name;   // 名称
+  Coordinate2D coord;  // 坐标
+  std::string name;    // 名称
+  Point2D centerPoint; // 中心点(相对于画布左上角为原点的相对坐标)
 };

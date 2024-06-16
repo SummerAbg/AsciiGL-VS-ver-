@@ -8,7 +8,7 @@ public:
   // 构造基本字符
   AsciiBasicChar();
   AsciiBasicChar(char chr, bool isTrpr = false)
-      : character(chr), colorVal(ASCII_WORD_COLOR_WHITE), m_isTrpr(isTrpr) {}
+      : character(chr), colorVal(getDefaultColor()), m_isTrpr(isTrpr) {}
   AsciiBasicChar(char chr, ColorRGB clr, bool isTrpr = false)
       : character(chr), colorVal(clr), m_isTrpr(isTrpr) {}
 

@@ -80,16 +80,6 @@ int fps(int deltaTime) // ms
   return fps;
 }
 
-void hideCursor() {
-  HANDLE hndl = GetStdHandle(STD_OUTPUT_HANDLE);
-  CONSOLE_CURSOR_INFO CursorInfo;
-
-  GetConsoleCursorInfo(hndl, &CursorInfo);
-  CursorInfo.bVisible = false;
-
-  SetConsoleCursorInfo(hndl, &CursorInfo);
-}
-
 void debug() {
   const int length = 59;
   const int width = 29;
@@ -212,8 +202,8 @@ void WinRGBInit() {                              // 初始化
 }
 
 void AsciiGLInit() {
-  AsciiBasicChar::setTrprChr(' ');
-  AsciiBasicChar::setDefaultColor(ASCII_WORD_COLOR_GREY);
+  AsciiBasicChar::setTrprChr('/');
+  AsciiBasicChar::setDefaultColor(ASCII_WORD_COLOR_WHITE);
 }
 
 void statement() {
@@ -225,6 +215,37 @@ void statement() {
   std::cout << str << std::endl;
 }
 
+void test() {
+  AsciiBasicLayerMngr mngr(10, 10);
+  
+
+  AsciiBasicCanvas canvas1(6, 6);
+  setBorder(canvas1, "#");
+
+  AsciiBasicCanvas canvas2(6, 6);
+  setBorder(canvas2, {"*", false, ASCII_WORD_COLOR_GREEN});
+
+
+  AsciiBasicLayer layer1(canvas1, {1, 1}, "layer1");
+  layer1.setCenterPoint({3, 3});
+
+  AsciiBasicLayer layer2(canvas2, {1, 1}, "layer2");
+  layer2.setCenterPoint({0, 0});
+
+
+  mngr.addLayer({layer1, layer2});
+
+  setText(mngr, {2, 2}, "Hello world!");
+
+  mngr.getCanvas().show();
+
+  for (const auto &index : mngr) {
+    std::cout << index.getName() << std::endl;
+  }
+
+  getchar();
+}
+
 #include <filesystem>
 
 int main() {
@@ -233,6 +254,8 @@ int main() {
   statement();
 
   std::string input;
+
+  test();
 
   try {
     // debug();
@@ -261,9 +284,5 @@ int main() {
 
   return 0;
 }
-
-/*#include <iostream>
-
-int main() { return 0; }*/
 
 #endif
