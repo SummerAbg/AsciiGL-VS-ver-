@@ -2,10 +2,10 @@
 //  项目始于2023-08-11
 //  作者:  0xZed_
 
-#define DEBUG
-#ifndef DEBUG
+#define DEBUG_
+#ifndef DEBUG_
 
-#include "AsciiBasicGraphics.h"
+#include "graphics.h"
 
 const std::string AsciiGLVersion = "0.0.1";
 
@@ -57,9 +57,14 @@ int main(int argc, char **argv) {
 
 #else
 
-#include "AsciiBasicGraphics.h"
-#include "DebugLibrary.h"
+#include "graphics.h"
 #include <conio.h>
+
+#ifdef _DEBUG
+#include "vld.h"
+#endif // DEBUG
+
+using namespace AsciiGL;
 
 int fps(int deltaTime) // ms
 {
@@ -83,19 +88,20 @@ int fps(int deltaTime) // ms
 void debug() {
   const int length = 59;
   const int width = 29;
-  Coordinate2D coord = {8, 8};
+  Coord2d coord(8, 8);
 
   AsciiBasicLayerMngr mngr(length, width);
 
-  AsciiBasicLayer bgb(AsciiBasicCanvas("out\\canvas3.dat"), {0, 0}, "背景框");
-  AsciiBasicLayer girl1({1, 1, "荆"}, {length / 2, width / 2}, "成濑荆");
-  AsciiBasicLayer girl2({1, 1, "葵"}, {8, 6}, "深作葵");
-  AsciiBasicLayer girl3({1, 1, "妙"}, {4, 5}, "野村妙子");
+  AsciiBasicLayer bgb(AsciiBasicCanvas("out\\canvas3.dat"), Vec2d(0, 0),
+                      "背景框");
+  AsciiBasicLayer girl1({1, 1, "荆"}, Vec2d(length / 2, width / 2), "成濑荆");
+  AsciiBasicLayer girl2({1, 1, "葵"}, Vec2d(8, 6), "深作葵");
+  AsciiBasicLayer girl3({1, 1, "妙"}, Vec2d(4, 5), "野村妙子");
   AsciiBasicLayer me({1, 1, "我"}, coord, "0xZed_");
   AsciiBasicLayer layer_info({10, 15, "  "}, coord, "layer_info");
-  AsciiBasicLayer game_info({10, 10, "  "}, {10, 10}, "game_info");
+  AsciiBasicLayer game_info({10, 10, "  "}, Vec2d(10, 10), "game_info");
 
-  mngr.addLayer({bgb, layer_info, game_info, girl1, girl2, girl3, me});
+  mngr.appendLayer({bgb, layer_info, game_info, girl1, girl2, girl3, me});
 
   ULONGLONG time_start;
   ULONGLONG time_end;
@@ -142,7 +148,7 @@ void debug() {
                 std::to_string(i + 1) + "." + mngr[i].getName());
       }*/
 
-      setText(mngr["layer_info"], {0, 9}, std::to_string(FPS));
+      setText(mngr["layer_info"], Vec2d(0, 9), std::to_string(FPS));
 
       WinAPIDraw(mngr.getCanvas());
 
@@ -153,16 +159,16 @@ void debug() {
 
       auto &canvas = mngr["game_info"];
 
-      setText(canvas, {1, 2}, "averageFPS:" + std::to_string(averageFPS));
-      setText(canvas, {1, 3}, "bestFPS:" + std::to_string(bestFPS));
-      setText(canvas, {1, 4}, "FPS:" + std::to_string(FPS));
+      setText(canvas, Vec2d(1, 2), "averageFPS:" + std::to_string(averageFPS));
+      setText(canvas, Vec2d(1, 3), "bestFPS:" + std::to_string(bestFPS));
+      setText(canvas, Vec2d(1, 4), "FPS:" + std::to_string(FPS));
       // setText(canvas, {1, 6}, "changeCount:" + std::to_string(changeCount));
 
       /***************************************************/
 
       mngr.deleteLayer("line1");
 
-      AsciiBasicLayer line1({length, width}, {0, 0}, "line1");
+      AsciiBasicLayer line1({length, width}, Vec2d(0, 0), "line1");
       setLine(line1, mngr["成濑荆"].getCoordinate(),
               mngr["layer_info"].getCoordinate(), "[]", 0);
       mngr.insertLayer(2, line1);
@@ -181,9 +187,8 @@ void debug() {
       bestFPS = (bestFPS < FPS) ? FPS : bestFPS;
       sumFPS += FPS;
       averageFPS = static_cast<int>(sumFPS / ((loopCnt == 0) ? 1 : loopCnt));
-
-    } catch (const AsciiBasicError &error) {
-      error.printError();
+    } catch (const AsciiBasicException &error) {
+      std::cout << error.what() << std::endl;
     }
     loopCnt++;
   }
@@ -203,7 +208,7 @@ void WinRGBInit() {                              // 初始化
 
 void AsciiGLInit() {
   AsciiBasicChar::setTrprChr('/');
-  AsciiBasicChar::setDefaultColor(ASCII_WORD_COLOR_WHITE);
+  AsciiBasicChar::setDefaultColor({ASCII_COLOR_GREY, ASCII_COLOR_BLACK});
 }
 
 void statement() {
@@ -211,31 +216,29 @@ void statement() {
                           "0xZed_\n老子是AsciiGL之父!嘿嘿嘿嘿hihihihihihihi*n~"
                           "\n私の名は「0xZed_」、年齢15歳。自宅は杜王町北東部"
                           "の別荘地帯にあり。結婚はしていない。",
-                          false, ASCII_WORD_COLOR_CYAN_GREEN};
+                          false,
+                          {ASCII_COLOR_CYAN, ASCII_COLOR_BLACK}};
   std::cout << str << std::endl;
 }
 
 void test() {
   AsciiBasicLayerMngr mngr(10, 10);
-  
 
   AsciiBasicCanvas canvas1(6, 6);
   setBorder(canvas1, "#");
 
   AsciiBasicCanvas canvas2(6, 6);
-  setBorder(canvas2, {"*", false, ASCII_WORD_COLOR_GREEN});
+  setBorder(canvas2, {"*", false, {ASCII_COLOR_GREEN, ASCII_COLOR_BLACK}});
 
+  AsciiBasicLayer layer1(canvas1, Vec2d(1, 1));
+  layer1.setCenterCoordinate(Vec2d(3, 3));
 
-  AsciiBasicLayer layer1(canvas1, {1, 1}, "layer1");
-  layer1.setCenterPoint({3, 3});
+  AsciiBasicLayer layer2(canvas2, Vec2d(1, 1));
+  layer2.setCenterCoordinate(Vec2d(0, 0));
 
-  AsciiBasicLayer layer2(canvas2, {1, 1}, "layer2");
-  layer2.setCenterPoint({0, 0});
+  mngr.appendLayer({layer1, layer2});
 
-
-  mngr.addLayer({layer1, layer2});
-
-  setText(mngr, {2, 2}, "Hello world!");
+  setText(mngr, Vec2d(2, 2), "Hello world!");
 
   mngr.getCanvas().show();
 
@@ -246,6 +249,34 @@ void test() {
   getchar();
 }
 
+void test2() {
+  AsciiBasicLayerMngr mngr(20, 20);
+
+  AsciiBasicLayer layer1(AsciiBasicCanvas("out\\三角形.dat"), Vec2d(0, 0),
+                         "三角形");
+  mngr["三角形"] = layer1;
+
+  Coord2d coord = mngr["三角形"].getCoordinate();
+  while (1) {
+    if (coord.y >= 9) {
+      mngr["三角形"].setCoordinate(Vec2d(0, 0));
+      coord = mngr["三角形"].getCoordinate();
+    }
+
+    // 问题写法，bug源
+    setText(mngr, Vec2d(10, 0), "y:" + std::to_string(coord.y), "Y坐标显示");
+
+    mngr["三角形"].setCoordinate(Vec2d(coord.x, coord.y++));
+
+    WinAPIDraw(mngr.getCanvas());
+
+    // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    getchar();
+  }
+}
+
+void test3() {}
+
 #include <filesystem>
 
 int main() {
@@ -254,8 +285,6 @@ int main() {
   statement();
 
   std::string input;
-
-  test();
 
   try {
     // debug();
@@ -271,13 +300,14 @@ int main() {
         {
           EfficiencyDebug efd;
           canvas.show();
+          std::cout << std::endl;
         }
       }
       std::cout << "请输入任意键继续 ... " << std::endl;
       getchar();
     }
-  } catch (const AsciiBasicError &error) {
-    error.printError();
+  } catch (const AsciiBasicException &error) {
+    std::cout << error.what() << std::endl;
   }
 
   getchar();

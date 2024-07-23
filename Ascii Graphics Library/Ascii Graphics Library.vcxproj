@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -70,6 +70,11 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\x64\Release</OutDir>
+    <IncludePath>D:\Win10 Development Project\Visual Studio Projects\Ascii Graphics Library\Ascii Graphics Library\include;D:\Win10 Development Project\Visual Studio Projects\Ascii Graphics Library\Ascii Graphics Library\AsciiTools\include;$(IncludePath)</IncludePath>
+    <SourcePath>D:\Win10 Development Project\Visual Studio Projects\Ascii Graphics Library\Ascii Graphics Library\src;D:\Win10 Development Project\Visual Studio Projects\Ascii Graphics Library\Ascii Graphics Library\AsciiTools\src;$(SourcePath)</SourcePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -104,13 +109,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Win10 Development Project\Visual Studio Projects\Ascii Graphics Library\Ascii Graphics Library\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Win10 Development Project\Visual Studio Projects\Ascii Graphics Library\Ascii Graphics Library\include;$(VLD_Root)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(VLD_Root)\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -121,7 +132,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\Win10 Development Project\Visual Studio Projects\Ascii Graphics Library\Ascii Graphics Library\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -129,31 +140,53 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\AsciiBasic.cpp" />
-    <ClCompile Include="src\AsciiGLUntils.cpp" />
-    <ClCompile Include="src\AsciiBasicCanvas.cpp" />
-    <ClCompile Include="src\AsciiBasicChar.cpp" />
-    <ClCompile Include="src\AsciiBasicError.cpp" />
-    <ClCompile Include="src\AsciiBasicGraphics.cpp" />
-    <ClCompile Include="src\AsciiBasicLayer.cpp" />
-    <ClCompile Include="src\AsciiBasicLayerMngr.cpp" />
-    <ClCompile Include="src\AsciiBasicObject.cpp" />
-    <ClCompile Include="src\AsciiBasicString.cpp" />
+    <ClCompile Include="AsciiTools\src\at_Basic.cpp" />
+    <ClCompile Include="AsciiTools\src\at_BasicChar.cpp" />
+    <ClCompile Include="AsciiTools\src\at_BasicObject.cpp" />
+    <ClCompile Include="AsciiTools\src\at_BasicString.cpp" />
+    <ClCompile Include="AsciiTools\src\at_Debug.cpp" />
+    <ClCompile Include="AsciiTools\src\at_Exception.cpp" />
+    <ClCompile Include="AsciiTools\src\at_TextColor.cpp" />
+    <ClCompile Include="AsciiTools\src\at_Tools.cpp" />
+    <ClCompile Include="AsciiTools\src\at_TypeConvert.cpp" />
+    <ClCompile Include="src\agl_Basic.cpp" />
+    <ClCompile Include="src\agl_BasicCanvas.cpp" />
+    <ClCompile Include="src\agl_BasicLayer.cpp" />
+    <ClCompile Include="src\agl_BasicLayerMngr.cpp" />
+    <ClCompile Include="src\graphics.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\AsciiBasic.h" />
-    <ClInclude Include="include\AsciiBasicCanvas.h" />
-    <ClInclude Include="include\AsciiBasicChar.h" />
-    <ClInclude Include="include\AsciiBasicError.h" />
-    <ClInclude Include="include\AsciiBasicGraphics.h" />
-    <ClInclude Include="include\AsciiBasicLayer.h" />
-    <ClInclude Include="include\AsciiBasicLayerMngr.h" />
-    <ClInclude Include="include\AsciiBasicObject.h" />
-    <ClInclude Include="include\AsciiBasicString.h" />
-    <ClInclude Include="include\AsciiGLUntils.h" />
+    <ClInclude Include="AsciiTools\include\at_Basic.h" />
+    <ClInclude Include="AsciiTools\include\at_BasicChar.h" />
+    <ClInclude Include="AsciiTools\include\at_BasicObject.h" />
+    <ClInclude Include="AsciiTools\include\at_BasicString.h" />
+    <ClInclude Include="AsciiTools\include\at_Coordinate2d.h" />
+    <ClInclude Include="AsciiTools\include\at_Debug.h" />
+    <ClInclude Include="AsciiTools\include\at_Deserialization.h" />
+    <ClInclude Include="AsciiTools\include\at_Exception.h" />
+    <ClInclude Include="AsciiTools\include\at_Matrix2d.h" />
+    <ClInclude Include="AsciiTools\include\at_Serialization.h" />
+    <ClInclude Include="AsciiTools\include\at_TextColor.h" />
+    <ClInclude Include="AsciiTools\include\at_Tools.h" />
+    <ClInclude Include="AsciiTools\include\at_TypeConvert.h" />
+    <ClInclude Include="include\agl_AbstractImage.h" />
+    <ClInclude Include="include\agl_Basic.h" />
+    <ClInclude Include="include\agl_BasicCanvas.h" />
+    <ClInclude Include="include\agl_BasicLayer.h" />
+    <ClInclude Include="include\agl_BasicLayerMngr.h" />
+    <ClInclude Include="include\graphics.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="memory.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
