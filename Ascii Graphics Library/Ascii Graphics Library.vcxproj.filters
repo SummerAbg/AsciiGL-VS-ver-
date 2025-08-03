@@ -15,36 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\AsciiGLUntils.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AsciiBasicCanvas.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AsciiBasicChar.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AsciiBasicError.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AsciiBasicGraphics.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AsciiBasicLayer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AsciiBasicLayerMngr.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AsciiBasicObject.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AsciiBasicString.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AsciiBasic.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="AsciiTools\src\at_Basic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -72,59 +42,23 @@
     <ClCompile Include="AsciiTools\src\at_TypeConvert.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="agl_Basic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\agl_Basic.cpp">
+    <ClCompile Include="agl_BasicCanvas.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\agl_BasicCanvas.cpp">
+    <ClCompile Include="agl_BasicLayer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\agl_BasicLayer.cpp">
+    <ClCompile Include="agl_BasicLayerMngr.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\agl_BasicLayerMngr.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics.cpp">
+    <ClCompile Include="graphics.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\AsciiBasic.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="include\AsciiBasicCanvas.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="include\AsciiBasicChar.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="include\AsciiBasicError.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="include\AsciiBasicGraphics.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="include\AsciiBasicLayer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="include\AsciiBasicLayerMngr.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="include\AsciiBasicObject.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="include\AsciiBasicString.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="include\AsciiGLUntils.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="include\DebugLibrary.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="AsciiTools\include\at_Basic.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -164,22 +98,25 @@
     <ClInclude Include="AsciiTools\include\at_TypeConvert.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\agl_AbstractImage.h">
+    <ClInclude Include="agl_AbstractImage.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\agl_Basic.h">
+    <ClInclude Include="agl_Basic.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\agl_BasicCanvas.h">
+    <ClInclude Include="agl_BasicCanvas.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\agl_BasicLayer.h">
+    <ClInclude Include="agl_BasicLayer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\agl_BasicLayerMngr.h">
+    <ClInclude Include="agl_BasicLayerMngr.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\graphics.h">
+    <ClInclude Include="graphics.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AsciiTools\include\at_Option.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

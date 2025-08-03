@@ -8,12 +8,13 @@ int charToInt(char chr) { return atoi(std::string(1, chr).c_str()); }
 bool charToBool(char chr) { return intToBool(charToInt(chr)); }
 
 bool stringToBool(const std::string &str) {
-  if (str == "true")
+  if (str == "true") {
     return true;
-  else if (str == "false")
+  } else if (str == "false") {
     return false;
-  else
+  } else {
     throw AsciiBasicException(__FUNC__, "str非法!(只能是true或false!)");
+  }
 }
 
 bool intToBool(int number) { return static_cast<bool>(number); }
@@ -21,7 +22,7 @@ bool intToBool(int number) { return static_cast<bool>(number); }
 double stringToDouble(const std::string &str) { return std::stod(str); }
 
 short stringToShort(const std::string &str) {
-  const short *ret = reinterpret_cast<short *>(const_cast<char *>(str.c_str()));
+  short *ret = reinterpret_cast<short *>(const_cast<char *>(str.c_str()));
   return *ret;
 }
 } // namespace AsciiTools

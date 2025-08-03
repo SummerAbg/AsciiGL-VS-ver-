@@ -17,23 +17,22 @@ struct AsciiColor : public AsciiBasicObject {
   int b;
   double a;
 
-  AsciiColor();
+  AsciiColor() = default;
   AsciiColor(int r, int g, int b, double a = 1.0);
   AsciiColor(const std::string &str);
 
-  bool operator==(const AsciiColor &color) const;
-  bool operator!=(const AsciiColor &color) const;
+  bool operator==(AsciiColor color) const;
+  bool operator!=(AsciiColor color) const;
 
-  friend std::ostream &operator<<(std::ostream &output,
-                                  const AsciiColor &color);
-  friend std::istream &operator>>(std::istream &input, AsciiColor &color);
+  friend std::ostream &operator<<(std::ostream &output, AsciiColor color);
+  friend std::istream &operator>>(std::istream &input, AsciiColor color);
 
-  void info() const override;
-  std::string toString() const override;
+  void info() const;
+  std::string toString() const;
 
 private:
-  std::string getSerializeStr() const override;
-  void loadSerializeStr(const std::string &str) override;
+  std::string getSerializeStr() const;
+  void loadSerializeStr(const std::string &str);
 };
 
 // ÎÄ±¾ÑÕÉ«
@@ -42,23 +41,21 @@ struct AsciiTextColor : public AsciiBasicObject {
   AsciiColor color_background;
 
   AsciiTextColor() = default;
-  AsciiTextColor(const AsciiColor &color_text,
-                 const AsciiColor &color_background);
+  AsciiTextColor(AsciiColor color_text, AsciiColor color_background);
   AsciiTextColor(const std::string &str);
 
-  bool operator==(const AsciiTextColor &color) const;
-  bool operator!=(const AsciiTextColor &color) const;
+  bool operator==(AsciiTextColor color) const;
+  bool operator!=(AsciiTextColor color) const;
 
-  friend std::ostream &operator<<(std::ostream &output,
-                                  const AsciiTextColor &color);
-  friend std::istream &operator>>(std::istream &input, AsciiTextColor &color);
+  friend std::ostream &operator<<(std::ostream &output, AsciiTextColor color);
+  friend std::istream &operator>>(std::istream &input, AsciiTextColor color);
 
-  void info() const override;
-  std::string toString() const override;
+  void info() const;
+  std::string toString() const;
 
 private:
-  std::string getSerializeStr() const override;
-  void loadSerializeStr(const std::string &str) override;
+  std::string getSerializeStr() const;
+  void loadSerializeStr(const std::string &str);
 };
 
 const AsciiColor ASCII_COLOR_RED = {255, 0, 0};

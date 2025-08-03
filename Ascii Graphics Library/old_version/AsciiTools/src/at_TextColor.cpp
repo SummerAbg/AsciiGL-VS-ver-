@@ -1,13 +1,6 @@
 #include "at_Tools.h"
 
 namespace AsciiTools {
-AsciiColor::AsciiColor() {
-  this->r = 0;
-  this->g = 0;
-  this->b = 0;
-  this->a = 0.0;
-}
-
 AsciiColor::AsciiColor(int r, int g, int b, double a) {
   this->r = r;
   this->g = g;
@@ -23,14 +16,14 @@ AsciiColor::AsciiColor(const std::string &str) {
   }
 }
 
-bool AsciiColor::operator==(const AsciiColor &color) const {
+bool AsciiColor::operator==(AsciiColor color) const {
   return (this->r == color.r && this->g == color.g && this->b == color.b &&
           this->a == color.a)
              ? true
              : false;
 }
 
-bool AsciiColor::operator!=(const AsciiColor &color) const {
+bool AsciiColor::operator!=(AsciiColor color) const {
   return !(*this == color);
 }
 
@@ -62,8 +55,8 @@ void AsciiColor::loadSerializeStr(const std::string &str) {
   deserializeType(a, tokens[3]);
 }
 
-AsciiTextColor::AsciiTextColor(const AsciiColor &color_text,
-                               const AsciiColor &color_background) {
+AsciiTextColor::AsciiTextColor(AsciiColor color_text,
+                               AsciiColor color_background) {
   this->color_text = color_text;
   this->color_background = color_background;
 }
@@ -76,13 +69,13 @@ AsciiTextColor::AsciiTextColor(const std::string &str) {
   }
 }
 
-bool AsciiTextColor::operator==(const AsciiTextColor &color) const {
+bool AsciiTextColor::operator==(AsciiTextColor color) const {
   return (this->color_text == color.color_text &&
           this->color_background == color.color_background)
              ? true
              : false;
 }
-bool AsciiTextColor::operator!=(const AsciiTextColor &color) const {
+bool AsciiTextColor::operator!=(AsciiTextColor color) const {
   return !((*this) == color);
 }
 void AsciiTextColor::info() const {
@@ -91,7 +84,7 @@ void AsciiTextColor::info() const {
 }
 
 std::string AsciiTextColor::toString() const {
-  const std::string ret = spliceString(",", color_text, color_background);
+  std::string ret = spliceString(",", color_text, color_background);
 
   return ret;
 }
@@ -113,7 +106,7 @@ void AsciiTextColor::loadSerializeStr(const std::string &str) {
   }
 }
 
-std::ostream &operator<<(std::ostream &output, const AsciiColor &color) {
+std::ostream &operator<<(std::ostream &output, AsciiColor color) {
   setWordColor(color);
   output << color.toString();
 
@@ -123,7 +116,7 @@ std::ostream &operator<<(std::ostream &output, const AsciiColor &color) {
   return output;
 }
 
-std::istream &operator>>(std::istream &input, AsciiColor &color) {
+std::istream &operator>>(std::istream &input, AsciiColor color) {
   input >> color.r;
   input >> color.g;
   input >> color.b;
@@ -132,7 +125,7 @@ std::istream &operator>>(std::istream &input, AsciiColor &color) {
   return input;
 }
 
-std::ostream &operator<<(std::ostream &output, const AsciiTextColor &color) {
+std::ostream &operator<<(std::ostream &output, AsciiTextColor color) {
   setWordColor(color.color_text);
   setBackgroundColor(color.color_background);
   output << color.toString();
@@ -140,10 +133,11 @@ std::ostream &operator<<(std::ostream &output, const AsciiTextColor &color) {
   auto color_default = AsciiBasicChar::getDefaultColor();
   setBackgroundColor(color_default.color_background);
   setWordColor(color_default.color_text);
+
   return output;
 }
 
-std::istream &operator>>(std::istream &input, AsciiTextColor &color) {
+std::istream &operator>>(std::istream &input, AsciiTextColor color) {
   input >> color.color_text;
   input >> color.color_background;
 

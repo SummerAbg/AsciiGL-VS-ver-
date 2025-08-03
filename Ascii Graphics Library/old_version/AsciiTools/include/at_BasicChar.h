@@ -9,16 +9,16 @@ namespace AsciiTools {
 class AsciiBasicChar : public AsciiBasicObject {
 public:
   // 构造基本字符
-  AsciiBasicChar();
+  AsciiBasicChar() = default;
   AsciiBasicChar(char chr, bool trprState = false)
       : character(chr), color(getDefaultColor()), trprState(trprState) {}
   AsciiBasicChar(char chr, AsciiTextColor clr, bool trprState = false)
       : character(chr), color(clr), trprState(trprState) {}
 
   // 输出信息
-  void info() const override;
+  void info() const;
   // AsciiBasicChar转换为std::string
-  std::string toString() const override;
+  std::string toString() const;
 
   bool operator==(const AsciiBasicChar &chr) const;
   bool operator!=(const AsciiBasicChar &chr) const;
@@ -33,7 +33,7 @@ public:
   // 获取透明字符
   static char getTrprChr();
   // 设置默认颜色
-  static void setDefaultColor(const AsciiTextColor &clr);
+  static void setDefaultColor(AsciiTextColor clr);
   // 获取默认颜色
   static AsciiTextColor getDefaultColor();
 
@@ -48,11 +48,11 @@ public:
   // 获取颜色
   AsciiTextColor getColor() const { return color; }
   // 设置颜色
-  void setColor(const AsciiTextColor &clr) { color = clr; }
+  void setColor(AsciiTextColor clr) { color = clr; }
 
 private:
-  std::string getSerializeStr() const override;
-  void loadSerializeStr(const std::string &str) override;
+  std::string getSerializeStr() const;
+  void loadSerializeStr(const std::string &str);
 
 private:
   char character;       // 字符

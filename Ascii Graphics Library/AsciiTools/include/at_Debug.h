@@ -1,6 +1,7 @@
 #pragma once
 
 #include "at_BasicString.h"
+#include <chrono>
 #include <iostream>
 #include <thread>
 #include <windows.h>
@@ -11,16 +12,19 @@ void debug_log(const std::string &str);
 // 效率调试
 class EfficiencyDebug {
 public:
-  EfficiencyDebug() { start_time = GetTickCount64(); }
+  using TimePoint = std::chrono::steady_clock::time_point;
+
+  EfficiencyDebug() { start_t = std::chrono::high_resolution_clock::now(); }
   ~EfficiencyDebug() {
-    end_time = GetTickCount64();
-    debug_log("测速为" + std::to_string(end_time - start_time) + "ms");
+    end_t = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> delta_t = end_t - start_t;
+    debug_log("测速为" + std::to_string(delta_t.count()) + "ms");
   }
 
 private:
-  ULONGLONG start_time;
-  ULONGLONG end_time;
+  TimePoint start_t;
+  TimePoint end_t;
 };
 
-void WinAPIText(COORD coord, const std::string &str);
+void winApiText(const COORD &coord, const std::string &str);
 } // namespace AsciiTools

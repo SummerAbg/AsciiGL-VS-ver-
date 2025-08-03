@@ -7,10 +7,9 @@ namespace AsciiTools {
 class AsciiBasicString : public AsciiBasicObject {
 public:
   using Text = std::vector<AsciiBasicChar>;
-  using pText = std::shared_ptr<Text>;
 
   // 构造基本字符串
-  AsciiBasicString();
+  AsciiBasicString() = default;
   AsciiBasicString(
       const char *str, bool isTrpr = false,
       const AsciiTextColor clr = AsciiBasicChar::getDefaultColor());
@@ -22,36 +21,27 @@ public:
   AsciiBasicString(const std::string &str, const AsciiTextColorData &clr,
                    const AsciiTrprData &trpr);
   AsciiBasicString(const AsciiBasicChar &chr);
-  AsciiBasicString(const AsciiBasicString &str);
-  AsciiBasicString(AsciiBasicString &&str) noexcept;
 
   // 输出信息
-  void info() const override;
+  void info() const;
   // AsciiBasicString转换为std::string
-  std::string toString() const override;
+  std::string toString() const;
 
   // 获取头尾地址的函数(为了能够使用c++11的新特性)
-  auto begin() const { return text->begin(); }
-  auto end() const { return text->end(); }
+  auto begin() const { return text.begin(); }
+  auto end() const { return text.end(); }
 
   // 基本运算符
   bool operator==(const AsciiBasicString &str) const;
-
   bool operator!=(const AsciiBasicString &str) const;
 
-  AsciiBasicString &operator+=(const AsciiBasicString &str);
-  AsciiBasicString &operator+=(AsciiBasicString &&str) noexcept;
-
-  AsciiBasicString &operator+=(const AsciiBasicChar &chr);
-
+  AsciiBasicString operator+=(const AsciiBasicString &str);
+  AsciiBasicString operator+=(const AsciiBasicChar &chr);
   AsciiBasicString operator+(const AsciiBasicString &str) const;
   AsciiBasicString operator+(const AsciiBasicChar &chr) const;
 
   AsciiBasicChar &operator[](int index);
   const AsciiBasicChar &operator[](int index) const;
-
-  AsciiBasicString &operator=(const AsciiBasicString &str);
-  AsciiBasicString &operator=(AsciiBasicString &&str) noexcept;
 
   /////////////////////////////////////////////////////////////
 
@@ -62,17 +52,13 @@ public:
   // 删除字符串指定位置的字符
   void del(int index);
   // 给字符串的末尾添加字符
-  void append(const AsciiBasicChar &chr);
-  void append(AsciiBasicChar &&chr) noexcept;
-
+  void append(const AsciiBasicChar &chr) { text.emplace_back(chr); }
   void append(const AsciiBasicString &str);
-  void append(AsciiBasicString &&str) noexcept;
-
   // 清空字符串
   void clear();
 
   // 获取字符串大小
-  int size() const { return static_cast<int>(text->size()); }
+  int size() const { return static_cast<int>(text.size()); }
 
   // 获取透明数据
   AsciiTrprData getTrprData() const;
@@ -86,11 +72,11 @@ public:
   friend std::istream &operator>>(std::istream &input, AsciiBasicString &str);
 
 private:
-  std::string getSerializeStr() const override;
-  void loadSerializeStr(const std::string &str) override;
+  std::string getSerializeStr() const;
+  void loadSerializeStr(const std::string &str);
 
 private:
-  pText text; // 字符容器
+  Text text; // 字符容器
 };
 
 const AsciiBasicString TRPRSTR = {
@@ -100,7 +86,7 @@ const AsciiBasicString TRPRSTR = {
 AsciiBasicString getAdaptiveStr(const AsciiBasicChar &chr);
 
 // 剪裁字符串(获取index位置及之前的字符串)
-AsciiBasicString cutText(const AsciiBasicString &str, int index);
+AsciiBasicString cutString(const AsciiBasicString &str, int index);
 
 // 重叠字符串
 // 将strB重叠在strA的position的位置上
@@ -112,7 +98,7 @@ AsciiBasicString cutText(const AsciiBasicString &str, int index);
 //      "apple"重叠在"egg"的0位置上，得到"apple"
 //    ③当strA的长度小于strB的长度且处于限定模式下:
 //      "apple"重叠在"egg"的0位置上，得到"app"
-AsciiBasicString overlapText(const AsciiBasicString &str_a,
-                             const AsciiBasicString &str_b, int psotion = 0,
-                             bool is_limit = false);
+AsciiBasicString overlapString(const AsciiBasicString &strA,
+                               const AsciiBasicString &strB, int psotion = 0,
+                               bool isLimit = false);
 } // namespace AsciiTools

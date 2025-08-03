@@ -8,17 +8,17 @@
 
 namespace AsciiTools {
 // 2D坐标
-template <typename Type> struct Coordinate2d : AsciiBasicObject {
+template <typename Type> struct Coordinate2d : public AsciiBasicObject {
 public:
-  static_assert(std::is_same_v<Type, int> || std::is_same_v<Type, double> ||
-                    std::is_same_v<Type, short>,
-                "Type必须是int,double或short类型");
+  static_assert(std::is_same<Type, int>::value ||
+                    std::is_same<Type, double>::value ||
+                    std::is_same<Type, short>::value,
+                "Type一定是int,double或short");
 
   Type x;
   Type y;
 
-  Coordinate2d();
-  Coordinate2d(const Coordinate2d &coord);
+  Coordinate2d() = default;
   explicit Coordinate2d(Type x, Type y);
 
   bool operator==(const Coordinate2d &coord) const;
@@ -34,30 +34,17 @@ public:
   Coordinate2d<Type> operator*=(const Coordinate2d &coord);
   Coordinate2d<Type> operator/=(const Coordinate2d &coord);
 
-  Coordinate2d<Type> operator=(const Coordinate2d &coord);
-  Coordinate2d<Type> operator=(Coordinate2d &&coord) noexcept;
-
   Coordinate2d<Type> operator()(Type deltaX, Type deltaY) const;
-  void set(Type x, Type y);
 
-  void info() const override;
-  std::string toString() const override;
+  Coordinate2d<Type> &operator=(const Coordinate2d &coord);
+
+  void info() const;
+  std::string toString() const;
 
 private:
-  std::string getSerializeStr() const override;
-  void loadSerializeStr(const std::string &str) override;
+  std::string getSerializeStr() const;
+  void loadSerializeStr(const std::string &str);
 };
-
-template <typename Type> inline Coordinate2d<Type>::Coordinate2d() {
-  this->x = 0;
-  this->y = 0;
-}
-
-template <typename Type>
-inline Coordinate2d<Type>::Coordinate2d(const Coordinate2d &coord) {
-  this->x = coord.x;
-  this->y = coord.y;
-}
 
 template <typename Type> Coordinate2d<Type>::Coordinate2d(Type x, Type y) {
   this->x = x;
@@ -139,22 +126,6 @@ Coordinate2d<Type> Coordinate2d<Type>::operator/=(const Coordinate2d &coord) {
 }
 
 template <typename Type>
-inline Coordinate2d<Type>
-Coordinate2d<Type>::operator=(const Coordinate2d &coord) {
-  this->x = coord.x;
-  this->y = coord.y;
-  return *this;
-}
-
-template <typename Type>
-inline Coordinate2d<Type>
-Coordinate2d<Type>::operator=(Coordinate2d &&coord) noexcept {
-  this->x = coord.x;
-  this->y = coord.y;
-  return *this;
-}
-
-template <typename Type>
 Coordinate2d<Type> Coordinate2d<Type>::operator()(Type deltaX,
                                                   Type deltaY) const {
   Coordinate2d coord = *this;
@@ -163,10 +134,12 @@ Coordinate2d<Type> Coordinate2d<Type>::operator()(Type deltaX,
 
   return coord;
 }
-
-template <typename Type> inline void Coordinate2d<Type>::set(Type x, Type y) {
-  this->x = x;
-  this->y = y;
+template <typename Type>
+inline Coordinate2d<Type> &
+Coordinate2d<Type>::operator=(const Coordinate2d &coord) {
+  this->x = coord.x;
+  this->y = coord.y;
+  return *this;
 }
 
 template <typename Type> inline void Coordinate2d<Type>::info() const {
@@ -189,19 +162,21 @@ template <typename Type>
 inline void Coordinate2d<Type>::loadSerializeStr(const std::string &str) {
   const auto tokens = bracketMatch(str);
 
-  if (tokens.size() < 2)
+  if (tokens.size() < 2) {
     throw AsciiBasicException(__FUNC__, "参数过少!至少为两个!(x,y)");
+  }
 
-  const std::string str_x = tokens[0];
-  const std::string str_y = tokens[1];
+  auto str_x = tokens[0];
+  auto str_y = tokens[1];
 
-  if constexpr (std::is_same_v<Type, int>)
+  if constexpr (std::is_same_v<Type, int>) {
     *this = Coordinate2d<int>(stringToInt(str_x), stringToInt(str_y));
-  else if constexpr (std::is_same_v<Type, short>)
+  } else if constexpr (std::is_same_v<Type, short>) {
     *this = Coordinate2d<short>(stringToShort(str_x), stringToShort(str_y));
-  else if constexpr (std::is_same_v<Type, double>)
+  } else if constexpr (std::is_same_v<Type, double>) {
     *this = Coordinate2d<double>(stringToDouble(str_x), stringToDouble(str_y));
-  else
+  } else {
     throw AsciiBasicException(__FUNC__, "类型异常！(不是int，short或double)");
+  }
 }
 } // namespace AsciiTools

@@ -9,13 +9,16 @@ AsciiTextColor AsciiBasicChar::default_clr = {ASCII_COLOR_WHITE,
 std::ostream &operator<<(std::ostream &output, const AsciiBasicChar &chr) {
   static AsciiBasicChar buffer_chr;
 
-  if (chr.getColor() != buffer_chr.getColor())
-    setColor(chr.color);
+  if (chr.getColor() != buffer_chr.getColor()) {
+    setWordColor(chr.color.color_text);
+    setBackgroundColor(chr.color.color_background);
+  }
 
-  if (!chr.trprState)
+  if (!chr.trprState) {
     output << chr.character;
-  else
+  } else {
     output << AsciiBasicChar::trprChr;
+  }
 
   buffer_chr = chr;
 
@@ -27,13 +30,6 @@ std::istream &operator>>(std::istream &input, AsciiBasicChar &chr) {
   input >> chr.color;
   input >> chr.trprState;
   return input;
-}
-
-AsciiBasicChar::AsciiBasicChar() {
-  this->character = '\0';
-  this->trprState = false;
-  // this->color = {ASCII_COLOR_WHITE, ASCII_COLOR_BLACK};
-  this->color = default_clr;
 }
 
 void AsciiBasicChar::info() const {
@@ -61,9 +57,7 @@ void AsciiBasicChar::setTrprChr(char chr) { trprChr = chr; }
 
 char AsciiBasicChar::getTrprChr() { return trprChr; }
 
-void AsciiBasicChar::setDefaultColor(const AsciiTextColor &clr) {
-  default_clr = clr;
-}
+void AsciiBasicChar::setDefaultColor(AsciiTextColor clr) { default_clr = clr; }
 
 AsciiTextColor AsciiBasicChar::getDefaultColor() { return default_clr; }
 
@@ -74,8 +68,9 @@ std::string AsciiBasicChar::getSerializeStr() const {
 void AsciiBasicChar::loadSerializeStr(const std::string &str) {
   const auto tokens = bracketMatch(str);
 
-  if (tokens.size() != 3)
+  if (tokens.size() != 3) {
     throw AsciiBasicException(__FUNC__, FileFormatError);
+  }
 
   deserializeType(character, tokens[0]);
   deserializeType(trprState, tokens[1]);
