@@ -12,15 +12,17 @@ AsciiBasicLayerMngr::AsciiBasicLayerMngr(int length, int width,
   AsciiBasicLayer layer(canvas, Vec2d(0, 0), "background_layer");
 
   this->layers = std::make_shared<Layers>();
-  this->layers->emplace_back(layer);
+  this->layers->emplace_back(std::move(layer));
 }
 
 AsciiBasicLayerMngr::AsciiBasicLayerMngr(const AsciiBasicLayerMngr &mngr) {
-  *this = mngr;
+  // this->layers = mngr.layers;
+  this->layers = std::make_shared<Layers>();
+  *this->layers = *mngr.layers;
 }
 
 AsciiBasicLayerMngr::AsciiBasicLayerMngr(AsciiBasicLayerMngr &&mngr) noexcept {
-  *this = mngr;
+  this->layers = std::move(mngr.layers);
   mngr.layers = nullptr;
 }
 
@@ -157,7 +159,7 @@ AsciiBasicLayerMngr::operator=(const AsciiBasicLayerMngr &mngr) {
 
 AsciiBasicLayerMngr &
 AsciiBasicLayerMngr::operator=(AsciiBasicLayerMngr &&mngr) noexcept {
-  *this->layers = std::move(*mngr.layers);
+  this->layers = std::move(mngr.layers);
   mngr.layers = nullptr;
 
   return *this;

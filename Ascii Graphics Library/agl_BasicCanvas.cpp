@@ -13,7 +13,11 @@ AsciiBasicCanvas::AsciiBasicCanvas(int length, int width,
   this->datas = std::make_unique<CanvasData>(length, width, str);
 }
 
-AsciiBasicCanvas::AsciiBasicCanvas(const std::string &path) { load(path); }
+AsciiBasicCanvas::AsciiBasicCanvas(const std::string &path) {
+  this->block_length = 0;
+  this->datas = std::make_unique<CanvasData>();
+  load(path);
+}
 
 AsciiBasicCanvas::AsciiBasicCanvas(const AsciiBasicCanvas &canvas) {
   this->block_length = canvas.block_length;
@@ -44,24 +48,24 @@ std::string AsciiBasicCanvas::toString() const {
 }
 
 AsciiBasicString &AsciiBasicCanvas::operator[](const Coord2d &coord) {
-  if (!isCoordinate(coord)) {
+  if (!isCoordinate(coord))
     throw AsciiBasicException(__FUNC__, "coord非法!");
-  }
+
   return (*datas)[coord];
 }
 
 const AsciiBasicString &
 AsciiBasicCanvas::operator[](const Coord2d &coord) const {
-  if (!isCoordinate(coord)) {
+  if (!isCoordinate(coord))
     throw AsciiBasicException(__FUNC__, "coord非法!");
-  }
+
   return (*datas)[coord];
 }
 
 const AsciiBasicString &AsciiBasicCanvas::operator()(int x, int y) const {
-  if (!isCoordinate(Vec2d(x, y))) {
+  if (!isCoordinate(Vec2d(x, y)))
     throw AsciiBasicException(__FUNC__, "coord非法!");
-  }
+
   return (*datas)(x, y);
 }
 
@@ -82,9 +86,9 @@ void AsciiBasicCanvas::setCanvas(const Coord2d &coord,
 }
 
 AsciiBasicString AsciiBasicCanvas::getCanvas(const Coord2d &coord) const {
-  if (!isCoordinate(coord)) {
+  if (!isCoordinate(coord))
     throw AsciiBasicException(__FUNC__, "coord非法!");
-  }
+
   return this->datas->getElement(coord);
 }
 
@@ -123,14 +127,11 @@ void AsciiBasicCanvas::save(const std::string &path) const {
 }
 
 void AsciiBasicCanvas::load(const std::string &path) {
-  std::filesystem::path file_path(path);
-  if (file_path.extension().string() != ".asc2") {
-    throw AsciiBasicException(__FUNC__, "该文件并非asc2文件!");
-  }
+  const std::filesystem::path file_path(path);
+  if (file_path.extension().string() != ".asc2")
+    throw AsciiBasicException(__FUNC__, "该文件不是asc2文件!");
 
-  *this = AsciiBasicCanvas();
-
-  std::string fileData = getFileData(path);
+  const std::string fileData = getFileData(path);
   deserializeType(*this, fileData);
 }
 
@@ -141,7 +142,7 @@ bool AsciiBasicCanvas::isCoordinate(const Coord2d &coord) const {
 }
 
 COORD AsciiBasicCanvas::toConsoleCoord(const Coord2d &coord) const {
-  COORD ret = {};
+  COORD ret;
   ret.X = static_cast<short>(coord.x * block_length);
   ret.Y = static_cast<short>(coord.y);
   return ret;
@@ -161,8 +162,6 @@ bool AsciiBasicCanvas::operator!=(const AsciiBasicCanvas &canvas) const {
 AsciiBasicCanvas &AsciiBasicCanvas::operator=(const AsciiBasicCanvas &canvas) {
   this->block_length = canvas.block_length;
   *this->datas = *canvas.datas;
-  // printf("Canvas拷贝%d\t%d\n", this->datas->size(), canvas.datas->size());
-  // getchar();
 
   return *this;
 }

@@ -10,7 +10,7 @@ template <typename T> void deserializeType(T &obj, const std::string &str) {
       obj = static_cast<char>(stringToInt(str));
       return;
     }
-    TypeDecorator<T, std::string> decorator(str);
+    const TypeDecorator<T, std::string> decorator(str);
     obj = decorator.toTargetType();
   } else {
     deserialize(&obj, str);

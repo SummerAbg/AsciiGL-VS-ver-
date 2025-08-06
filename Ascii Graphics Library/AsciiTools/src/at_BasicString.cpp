@@ -1,57 +1,50 @@
 #include "at_Tools.h"
 
 namespace AsciiTools {
-AsciiBasicString::AsciiBasicString() { this->text = std::make_shared<Text>(); }
+AsciiBasicString::AsciiBasicString() { this->text = std::make_unique<Text>(); }
 
 AsciiBasicString::AsciiBasicString(const char *str, bool trprState,
                                    const AsciiTextColor clr) {
-  this->text = std::make_shared<Text>();
-  const std::string text = str;
-  const AsciiTrprData trpr(text.size(), trprState);
-  const AsciiTextColorData color(text.size(), clr);
+  const int size_str = strlen(str);
+  const AsciiTrprData trpr(size_str, trprState);
+  const AsciiTextColorData color(size_str, clr);
 
   *this = std::move(AsciiBasicString(str, color, trpr));
 }
 
 AsciiBasicString::AsciiBasicString(const std::string &str, bool trprState,
                                    const AsciiTextColor clr) {
-  this->text = std::make_shared<Text>();
-
   *this = std::move(AsciiBasicString(str.c_str(), trprState, clr));
 }
 
 AsciiBasicString::AsciiBasicString(const char *str,
                                    const AsciiTextColorData &clr,
                                    const AsciiTrprData &trpr) {
-  this->text = std::make_shared<Text>();
-  const std::string text = str;
-  const int size = text.size();
+  this->text = std::make_unique<Text>();
 
+  const int size = strlen(str);
   for (int i = 0; i < size; i++) {
-    this->text->emplace_back(text[i], clr[i], trpr[i]);
+    this->text->emplace_back(str[i], clr[i], trpr[i]);
   }
 }
 
 AsciiBasicString::AsciiBasicString(const std::string &str,
                                    const AsciiTextColorData &clr,
                                    const AsciiTrprData &trpr) {
-  this->text = std::make_shared<Text>();
-
   *this = std::move(AsciiBasicString(str.c_str(), clr, trpr));
 }
 
 AsciiBasicString::AsciiBasicString(const AsciiBasicChar &chr) {
-  this->text = std::make_shared<Text>();
-
+  this->text = std::make_unique<Text>();
   this->text->push_back(chr);
 }
 
 AsciiBasicString::AsciiBasicString(const AsciiBasicString &str) {
-  this->text = std::make_shared<Text>(*str.text);
+  this->text = std::make_unique<Text>(*str.text);
 }
 
 AsciiBasicString::AsciiBasicString(AsciiBasicString &&str) noexcept {
-  *this->text = std::move(*str.text);
+  this->text = std::move(str.text);
   str.text = nullptr;
 }
 
@@ -135,7 +128,7 @@ AsciiBasicString &AsciiBasicString::operator=(const AsciiBasicString &str) {
 }
 
 AsciiBasicString &AsciiBasicString::operator=(AsciiBasicString &&str) noexcept {
-  *this->text = std::move(*str.text);
+  this->text = std::move(str.text);
   str.text = nullptr;
 
   return *this;
@@ -209,7 +202,7 @@ void AsciiBasicString::loadSerializeStr(const std::string &str) {
   AsciiBasicChar chr;
   for (const auto &index : tokens) {
     deserializeType(chr, index);
-    this->text->emplace_back(std::move(chr));
+    this->text->push_back(chr);
   }
 }
 
@@ -229,7 +222,8 @@ std::istream &operator>>(std::istream &input, AsciiBasicString &str) {
 
 AsciiBasicString getAdaptiveStr(const AsciiBasicChar &chr) {
   AsciiBasicString ret;
-  for (int i = 0; i < TRPRSTR.size(); i++) {
+  const int size_trprstr = TRPRSTR.size();
+  for (int i = 0; i < size_trprstr; i++) {
     ret += chr;
   }
   return ret;
@@ -254,12 +248,14 @@ AsciiBasicString overlapText(const AsciiBasicString &str_a,
   const int size_str = is_limit ? size_a : size_b;
 
   int index;
+  int size_ret;
   for (int i = 0; i < size_str; i++) {
     index = i + position;
+    size_ret = ret.size();
 
-    if (index < ret.size() && i < size_b)
+    if (index < size_ret && i < size_b)
       ret[index] = str_b[i];
-    else if (index >= ret.size() && i < size_b)
+    else if (index >= size_ret && i < size_b)
       ret += str_b[i];
   }
 

@@ -74,6 +74,7 @@
     <OutDir>..\x64\Release</OutDir>
     <IncludePath>D:\Win10 Development Project\Visual Studio Projects\Ascii Graphics Library\Ascii Graphics Library\AsciiTools\include;$(IncludePath)</IncludePath>
     <SourcePath>D:\Win10 Development Project\Visual Studio Projects\Ascii Graphics Library\Ascii Graphics Library\AsciiTools\src;$(SourcePath)</SourcePath>
+    <TargetName>AsciiGL</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

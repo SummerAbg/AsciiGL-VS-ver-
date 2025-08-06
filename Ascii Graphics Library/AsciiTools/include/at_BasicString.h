@@ -7,7 +7,7 @@ namespace AsciiTools {
 class AsciiBasicString : public AsciiBasicObject {
 public:
   using Text = std::vector<AsciiBasicChar>;
-  using pText = std::shared_ptr<Text>;
+  using pText = std::unique_ptr<Text>;
 
   // 构造基本字符串
   AsciiBasicString();
