@@ -1,11 +1,7 @@
 ﻿// Ascii Graphics Library(AsciiGL)
 //  项目始于2023-08-11
 //  作者:  0xZed_
-
-#define DEBUG_
-#ifndef DEBUG_
-
-#include "graphics.h"
+/*#include "graphics.h"
 
 const std::string AsciiGLVersion = "0.0.1";
 
@@ -28,8 +24,8 @@ void show(const std::string &path) {
   try {
     const AsciiBasicCanvas canvas(path);
     canvas.show();
-  } catch (const AsciiBasicError &error) {
-    error.printError();
+  } catch (const std::exception &e) {
+    std::cout << e.what() << std::endl;
   }
 }
 
@@ -54,10 +50,11 @@ int main(int argc, char **argv) {
 
   return 0;
 }
-
-#else
-
+*/
+#include "at_basicmanager.h"
+#include "at_thread.h"
 #include "graphics.h"
+#include <atomic>
 #include <conio.h>
 
 #ifdef _DEBUG
@@ -66,149 +63,143 @@ int main(int argc, char **argv) {
 
 using namespace AsciiGL;
 
-int fps(int deltaTime) // ms
-{
-  static float avgDuration = 0.f;
-  static float alpha = 1.f / 100.f; // 采样数设置为100
-  static int frameCount = 0;
-
-  ++frameCount;
-
-  int fps = 0;
-  if (1 == frameCount) {
-    avgDuration = static_cast<float>(deltaTime);
-  } else {
-    avgDuration = avgDuration * (1 - alpha) + deltaTime * alpha;
-  }
-
-  fps = static_cast<int>(1.f / avgDuration * 1000);
-  return fps;
+size_t fps(double deltaTime) {
+  return deltaTime != 0.0 ? static_cast<size_t>(1.0 / deltaTime) : 0;
 }
 
 void debug() {
   const int length = 59;
   const int width = 29;
-  Coord2d coord(8, 8);
+  Coord2d coord(17, 3);
 
-  AsciiBasicLayerMngr mngr(length, width);
+  AsciiBasicLayerMngr mngr(length, width, "  ");
 
-  AsciiBasicLayer bgb(AsciiBasicCanvas("out\\canvas3.dat"), Vec2d(0, 0),
-                      "背景框");
-  AsciiBasicLayer girl1({1, 1, "荆"}, Vec2d(length / 2, width / 2), "成濑荆");
-  AsciiBasicLayer girl2({1, 1, "葵"}, Vec2d(8, 6), "深作葵");
-  AsciiBasicLayer girl3({1, 1, "妙"}, Vec2d(4, 5), "野村妙子");
-  AsciiBasicLayer me({1, 1, "我"}, coord, "0xZed_");
-  AsciiBasicLayer layer_info({10, 15, "  "}, coord, "layer_info");
-  AsciiBasicLayer game_info({10, 10, "  "}, Vec2d(10, 10), "game_info");
+  // AsciiBasicLayer bgb(AsciiBasicCanvas("new_out\\canvas3.asc2"), Vec2d(0, 0),
+  //                    "背景框");
+  AsciiBasicLayer bgb(AsciiBasicCanvas("火焰猫磷.asc2"), Vec2d(0, 0), "背景框");
 
-  mngr.appendLayer({bgb, layer_info, game_info, girl1, girl2, girl3, me});
+  // AsciiBasicCanvas bgb_canvas(length, width,
+  //                             {"  ", {ASCII_COLOR_GREY, {221, 221, 223}}});
+  //  setBorder(bgb_canvas, {"  ", CYAN_BLACK});
+  // AsciiBasicLayer bgb(bgb_canvas, Vec2d(0, 0), "背景框");
+  AsciiBasicLayer girl1({{"荆", FG_INDIGO}}, Vec2d(length / 2, width / 2),
+                        "成濑荆");
+  AsciiBasicLayer girl2({{"葵", FG_INDIGO}}, Vec2d(8, 6), "深作葵");
+  AsciiBasicLayer girl3({{"妙", FG_INDIGO}}, Vec2d(4, 5), "野村妙子");
+  // AsciiBasicLayer me({1, 1, {"吾", BG_RED}}, coord, "0xZed_");
+  AsciiBasicLayer me(AsciiBasicCanvas("youmu.asc2"), coord, "0xZed_");
+  mngr.append({bgb, me, girl1, girl2, girl3});
 
-  ULONGLONG time_start;
-  ULONGLONG time_end;
-  int deltaTime;
+  // AsciiBasicLayerMngr mngr;
+  // deserializeType(mngr, getFileData("mngr.dat"));
+
+  std::atomic<double> deltaTime = 0.0;
 
   char input;
 
-  int bestFPS = 0;
-  int FPS = 0;
-  int averageFPS = 0;
+  size_t bestFPS = 0;
+  size_t FPS = 0;
+  size_t averageFPS = 0;
 
   size_t sumFPS = 0;
   size_t loopCnt = 0;
 
   hideCursor();
 
-  while (1) {
-    EfficiencyDebug efd;
-    try {
-      time_start = GetTickCount64();
+  ThreadDetector thread_detector;
+  std::shared_mutex s_mtx;
 
-      if (_kbhit()) {
-        input = _getch();
+  auto threadControl = [&]() {
+    if (_kbhit()) {
+      input = _getch();
 
-        switch (input) {
-        case 'w':
-          coord.y--;
-          break;
-        case 's':
-          coord.y++;
-          break;
-        case 'a':
-          coord.x--;
-          break;
-        case 'd':
-          coord.x++;
-          break;
-        }
-        mngr["layer_info"].setCoordinate(coord);
+      switch (input) {
+      case 'w':
+        coord.y--;
+        break;
+      case 's':
+        coord.y++;
+        break;
+      case 'a':
+        coord.x--;
+        break;
+      case 'd':
+        coord.x++;
+        break;
       }
-
-      /* for (int i = 0; i < mngr.size(); i++) {
-        setText(mngr["layer_info"], {1, mngr.size() - i - 1},
-                std::to_string(i + 1) + "." + mngr[i].getName());
-      }*/
-
-      setText(mngr["layer_info"], Vec2d(0, 9), std::to_string(FPS));
-
-      WinAPIDraw(mngr.getCanvas());
-
-      /***************************************************/
-
-      mngr["game_info"].clear(false);
-      mngr["layer_info"].clear(false);
-
-      auto &canvas = mngr["game_info"];
-
-      setText(canvas, Vec2d(1, 2), "averageFPS:" + std::to_string(averageFPS));
-      setText(canvas, Vec2d(1, 3), "bestFPS:" + std::to_string(bestFPS));
-      setText(canvas, Vec2d(1, 4), "FPS:" + std::to_string(FPS));
-      // setText(canvas, {1, 6}, "changeCount:" + std::to_string(changeCount));
-
-      /***************************************************/
-
-      mngr.deleteLayer("line1");
-
-      AsciiBasicLayer line1({length, width}, Vec2d(0, 0), "line1");
-      setLine(line1, mngr["成濑荆"].getCoordinate(),
-              mngr["layer_info"].getCoordinate(), "[]", 0);
-      mngr.insertLayer(2, line1);
-
-      /***************************************************/
-
-      setBorder(mngr["layer_info"], "<>");
-      setBorder(mngr["game_info"], "()");
-
-      /***************************************************/
-
-      time_end = GetTickCount64();
-      deltaTime = static_cast<int>(time_end - time_start);
-
-      FPS = fps(deltaTime);
-      bestFPS = (bestFPS < FPS) ? FPS : bestFPS;
-      sumFPS += FPS;
-      averageFPS = static_cast<int>(sumFPS / ((loopCnt == 0) ? 1 : loopCnt));
-    } catch (const AsciiBasicException &error) {
-      std::cout << error.what() << std::endl;
+      mngr["0xZed_"].setCoordinate(coord);
     }
-    loopCnt++;
-  }
-}
+  };
 
-void WinRGBInit() {                              // 初始化
-  HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);   // 输入句柄
-  HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE); // 输出句柄
-  DWORD dwInMode, dwOutMode;
-  GetConsoleMode(hIn, &dwInMode);   // 获取控制台输入模式
-  GetConsoleMode(hOut, &dwOutMode); // 获取控制台输出模式
-  dwInMode |= 0x0200;               // 更改
-  dwOutMode |= 0x0004;
-  SetConsoleMode(hIn, dwInMode);   // 设置控制台输入模式
-  SetConsoleMode(hOut, dwOutMode); // 设置控制台输出模式
-}
+  auto threadDisplayData = [&]() {
+    std::string layers_information;
+    std::string threads_information;
 
-void AsciiGLInit() {
-  AsciiBasicChar::setTrprChr('/');
-  AsciiBasicChar::setDefaultColor({ASCII_COLOR_GREY, ASCII_COLOR_BLACK});
+    for (const auto &index : mngr) {
+      layers_information += index->getLabel() +=
+          "\t" + index->getCoordinate().toString() += "\n";
+    }
+
+    for (const auto &index : *thread_detector.getWorks()) {
+      threads_information += index.label + "\t" +=
+          std::to_string(fps(index.delta_t)) + "-" += "\n";
+    }
+
+    std::shared_lock<std::shared_mutex> lock(s_mtx);
+
+    winApiText({0, 0}, "threads_information:\n" + threads_information);
+    // winApiText({50, 2}, "averageFPS:" + std::to_string(averageFPS));
+    // winApiText({50, 3}, "bestFPS:" + std::to_string(bestFPS));
+    // winApiText({50, 4}, "FPS:" + std::to_string(FPS));
+    winApiText({0, 8}, "layers_information:\n" + layers_information);
+  };
+
+  auto threadUpdateData = [&]() {
+    // deltaTime = thread_detector.getTasks();
+    FPS = fps(deltaTime);
+    bestFPS = (bestFPS < FPS) ? FPS : bestFPS;
+    sumFPS += FPS;
+    averageFPS = static_cast<size_t>(sumFPS / ((loopCnt == 0) ? 1 : loopCnt));
+  };
+
+  /* while (1) {
+     TimeMeasurer time_measurer(&deltaTime);
+    try {
+      threadControl();
+      winApiDraw(mngr);
+
+      // setText(canvas, {1, 6}, "changeCount:" + std::to_string(changeCount));
+      threadDisplayData();
+
+      // mngr.remove("line1");
+
+      // AsciiBasicLayer line1({length, width}, Vec2d(0, 0), "line1");
+      // setLine(line1, mngr["成濑荆"].getCoordinate(),
+      //         mngr["layer_info"].getCoordinate(), "[]", 0);
+      // mngr.insert(2, line1);
+
+      // setBorder(mngr["layer_info"], "<>");
+      // setBorder(mngr["game_info"], "()");
+
+      threadUpdateData();
+    }
+    catch (const AsciiBasicException &e) {
+      std::cout << e.what() << std::endl;
+    }*/
+  thread_detector.append("控制线程", threadControl, 60);
+  thread_detector.append(
+      "渲染线程",
+      [&]() {
+        std::unique_lock<std::shared_mutex> lock(s_mtx);
+        winApiDraw(mngr);
+        loopCnt++;
+      },
+      0);
+  thread_detector.append("调试线程", threadDisplayData, 60);
+  //  thread_detector.append("更新线程", threadUpdateData, 120);
+
+  thread_detector.execute();
+  thread_detector.join();
 }
 
 void statement() {
@@ -221,73 +212,17 @@ void statement() {
   std::cout << str << std::endl;
 }
 
-void test() {
-  AsciiBasicLayerMngr mngr(10, 10);
-
-  AsciiBasicCanvas canvas1(6, 6);
-  setBorder(canvas1, "#");
-
-  AsciiBasicCanvas canvas2(6, 6);
-  setBorder(canvas2, {"*", false, {ASCII_COLOR_GREEN, ASCII_COLOR_BLACK}});
-
-  AsciiBasicLayer layer1(canvas1, Vec2d(1, 1));
-  layer1.setCenterCoordinate(Vec2d(3, 3));
-
-  AsciiBasicLayer layer2(canvas2, Vec2d(1, 1));
-  layer2.setCenterCoordinate(Vec2d(0, 0));
-
-  mngr.appendLayer({layer1, layer2});
-
-  setText(mngr, Vec2d(2, 2), "Hello world!");
-
-  mngr.getCanvas().show();
-
-  for (const auto &index : mngr) {
-    std::cout << index.getName() << std::endl;
-  }
-
-  getchar();
-}
-
-void test2() {
-  AsciiBasicLayerMngr mngr(20, 20);
-
-  AsciiBasicLayer layer1(AsciiBasicCanvas("out\\三角形.dat"), Vec2d(0, 0),
-                         "三角形");
-  mngr["三角形"] = layer1;
-
-  Coord2d coord = mngr["三角形"].getCoordinate();
-  while (1) {
-    if (coord.y >= 9) {
-      mngr["三角形"].setCoordinate(Vec2d(0, 0));
-      coord = mngr["三角形"].getCoordinate();
-    }
-
-    // 问题写法，bug源
-    setText(mngr, Vec2d(10, 0), "y:" + std::to_string(coord.y), "Y坐标显示");
-
-    mngr["三角形"].setCoordinate(Vec2d(coord.x, coord.y++));
-
-    WinAPIDraw(mngr.getCanvas());
-
-    // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    getchar();
-  }
-}
-
-void test3() {}
-
 #include <filesystem>
 
 int main() {
-  WinRGBInit();
-  AsciiGLInit();
+  AsciiGL::initAsciiGL();
   statement();
 
   std::string input;
 
   try {
-    // debug();
+    // throw AsciiBasicException("Hello world");
+    debug();
     while (1) {
       std::cout << "请输入要访问的文件夹路径: ";
       std::getline(std::cin, input);
@@ -306,13 +241,12 @@ int main() {
       std::cout << "请输入任意键继续 ... " << std::endl;
       getchar();
     }
-  } catch (const AsciiBasicException &error) {
-    std::cout << error.what() << std::endl;
+  } catch (const AsciiBasicException &e) {
+    std::cout << e.what() << std::endl;
   }
+  AsciiGL::dropAsciiGL();
 
   getchar();
 
   return 0;
 }
-
-#endif

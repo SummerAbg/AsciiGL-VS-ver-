@@ -1,7 +1,7 @@
 #pragma once
 
-#include "at_Basic.h"
-#include "at_TypeConvert.h"
+#include "at_basic.h"
+#include "at_typeconvert.h"
 
 namespace AsciiTools {
 template <typename T> class Serialization {
@@ -34,7 +34,7 @@ inline std::string Serialization<T>::getSerializationStr() const {
     TypeDecorator<std::string, T> decorator(obj);
     return decorator.toTargetType();
   } else {
-    return serialize(&obj);
+    return serialize(obj);
   }
 }
 } // namespace AsciiTools

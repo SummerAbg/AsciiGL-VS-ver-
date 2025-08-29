@@ -1,4 +1,4 @@
-#include "at_Debug.h"
+#include "at_debug.h"
 
 void AsciiTools::debug_log(const std::string &str) {
   AsciiBasicString prefix("[ debug ]", false,
@@ -11,15 +11,13 @@ void AsciiTools::winApiText(const COORD &coord, const std::string &str) {
   static std::string buffer;
 
   HANDLE hndl = GetStdHandle(STD_OUTPUT_HANDLE);
-  SetConsoleCursorPosition(hndl, coord);
+  // SetConsoleCursorPosition(hndl, coord);
 
-  /* for (int i = 0; i < buffer.size(); i++) {
-    std::cout << " ";
-  }*/
   buffer = str;
 
   SetConsoleCursorPosition(hndl, coord);
   setWordColor(ASCII_COLOR_WHITE);
   setBackgroundColor(ASCII_COLOR_GREY);
   std::cout << str;
+  setColor(AsciiBasicChar::getDefaultColor());
 }

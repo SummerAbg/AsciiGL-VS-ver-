@@ -6,26 +6,26 @@ AsciiBasicCanvas getCanvas(const AsciiBasicCanvas &canvas, Coord2d coordA,
   if (!canvas.isCoordinate(coordA) || !canvas.isCoordinate(coordB) ||
       coordA == coordB) {
     throw AsciiBasicException(
-        __FUNC__, "coordA或coordB的坐标非法!（①可能是因为其中或两个坐标非法 "
-                  "②可能是因为两个坐标相等）");
+        "coordA或coordB的坐标非法!（①可能是因为其中或两个坐标非法 "
+        "②可能是因为两个坐标相等）");
   }
 
   const int length = abs(coordA.x - coordB.x) + 1;
   const int width = abs(coordA.y - coordB.y) + 1;
-  const auto str = canvas.getBackgroundStr();
+  const auto text_bg = canvas.getBackgroundStr();
 
-  AsciiBasicCanvas ret(length, width, str);
+  AsciiBasicCanvas ret(length, width, text_bg);
 
   // 介于两点坐标为顶点的矩形，以矩形左上方的顶点为起点遍历坐标
   Coord2d coord((coordA.x < coordB.x ? coordA.x : coordB.x),
                 (coordA.y < coordB.y ? coordA.y : coordB.y));
 
-  AsciiBasicString text;
+  AsciiBasicString text_index;
 
   for (int i = 0; i < width; i++) {
     for (int j = 0; j < length; j++) {
-      text = canvas(coord.x + j, coord.y + i);
-      ret.setCanvas(Vec2d(j, i), text);
+      text_index = canvas(coord.x + j, coord.y + i);
+      ret.setCanvas(Vec2d(j, i), text_index);
     }
   }
   return ret;
@@ -53,10 +53,10 @@ AsciiBasicCanvas overlapCanvas(const AsciiBasicCanvas &canvas,
 
       text = str_canvas;
 
-      const int size_text = text.size();
+      const size_t size_text = text.size();
       AsciiTextColor color;
       AsciiBasicChar index_chr_target;
-      for (int i = 0; i < size_text; i++) {
+      for (size_t i = 0; i < size_text; i++) {
         // 共有数据
         auto &index_chr_canvas = text[i];
         index_chr_target = str_target[i];
@@ -80,7 +80,7 @@ AsciiBasicCanvas overlapCanvas(const AsciiBasicCanvas &canvas,
 void setText(AsciiBasicCanvas &canvas, Coord2d coord,
              const AsciiBasicString &str) {
   if (!canvas.isCoordinate(coord))
-    throw AsciiBasicException(__FUNC__, "coord非法!");
+    throw AsciiBasicException("coord非法!");
 
   if (str.size() <= canvas.getBlockLength()) {
     canvas.setCanvas(coord, str);
@@ -91,10 +91,10 @@ void setText(AsciiBasicCanvas &canvas, Coord2d coord,
   int indexCount = 0;
 
   const int block_length = canvas.getBlockLength();
-  const int strSize = str.size();
+  const size_t strSize = str.size();
 
   AsciiBasicString buffer;
-  for (int i = 0; i + block_length <= strSize; i += block_length) {
+  for (size_t i = 0; i + block_length <= strSize; i += block_length) {
     for (int j = 0; j < block_length; j++) {
       buffer += str[i + j];
       strIndex = i + j;
@@ -116,7 +116,7 @@ void setText(AsciiBasicLayer &layer, Coord2d coord,
              const AsciiBasicString &text) {
   const int length = getBlockNumber(text.size(), TRPRSTR.size());
   const int width = 1;
-  const std::string name = layer.getName();
+  const std::string name = layer.getLabel();
 
   AsciiBasicCanvas canvas(length, width);
   setText(canvas, Vec2d(0, 0), text);
@@ -265,5 +265,38 @@ void hideCursor() {
   SetConsoleCursorInfo(hndl, &CursorInfo);
 }
 
+AsciiAPI void initAsciiGL() {
+  // 不稳定：cout和printf的实际执行顺序不同步
+  std::ios::sync_with_stdio(false);
+  std::cin.tie(0);
+  std::cout.tie(0);
+
+  AsciiBasicChar::setTrprChr(' ');
+  AsciiBasicChar::setDefaultColor({ASCII_COLOR_WHITE, ASCII_COLOR_BLACK});
+
+  HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);   // 输入句柄
+  HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE); // 输出句柄
+  DWORD dwInMode, dwOutMode;
+  GetConsoleMode(hIn, &dwInMode);            // 获取控制台输入模式
+  GetConsoleMode(hOut, &dwOutMode);          // 获取控制台输出模式
+  dwInMode |= ENABLE_VIRTUAL_TERMINAL_INPUT; // 更改
+  dwOutMode |= ENABLE_ECHO_INPUT;
+  SetConsoleMode(hIn, dwInMode);   // 设置控制台输入模式
+  SetConsoleMode(hOut, dwOutMode); // 设置控制台输出模式
+}
+
+AsciiAPI void dropAsciiGL() {
+  restoreConsoleColor();
+
+  HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);   // 输入句柄
+  HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE); // 输出句柄
+  DWORD dwInMode, dwOutMode;
+  GetConsoleMode(hIn, &dwInMode);            // 获取控制台输入模式
+  GetConsoleMode(hOut, &dwOutMode);          // 获取控制台输出模式
+  dwInMode ^= ENABLE_VIRTUAL_TERMINAL_INPUT; // 更改
+  dwOutMode ^= ENABLE_ECHO_INPUT;
+  SetConsoleMode(hIn, dwInMode);   // 设置控制台输入模式
+  SetConsoleMode(hOut, dwOutMode); // 设置控制台输出模式
+}
 #endif
 } // namespace AsciiGL

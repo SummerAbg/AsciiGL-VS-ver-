@@ -1,4 +1,4 @@
-#include "agl_BasicCanvas.h"
+#include "agl_canvas.h"
 #include "graphics.h"
 
 namespace AsciiGL {
@@ -9,14 +9,19 @@ AsciiBasicCanvas::AsciiBasicCanvas() {
 
 AsciiBasicCanvas::AsciiBasicCanvas(int length, int width,
                                    const AsciiBasicString &str) {
-  this->block_length = str.size();
+  this->block_length = static_cast<int>(str.size());
   this->datas = std::make_unique<CanvasData>(length, width, str);
 }
 
-AsciiBasicCanvas::AsciiBasicCanvas(const std::string &path) {
+AsciiBasicCanvas::AsciiBasicCanvas(std::string &&path) {
   this->block_length = 0;
   this->datas = std::make_unique<CanvasData>();
   load(path);
+}
+
+AsciiBasicCanvas::AsciiBasicCanvas(const AsciiBasicString &content) {
+  this->block_length = static_cast<int>(content.size());
+  this->datas = std::make_unique<CanvasData>(1, 1, content);
 }
 
 AsciiBasicCanvas::AsciiBasicCanvas(const AsciiBasicCanvas &canvas) {
@@ -32,7 +37,7 @@ AsciiBasicCanvas::AsciiBasicCanvas(AsciiBasicCanvas &&canvas) noexcept {
   canvas.block_length = 0;
 }
 
-void AsciiBasicCanvas::info() const {
+void AsciiBasicCanvas::info() const noexcept {
   std::cout << "AsciiBasicCanvas对象" << std::endl;
   std::cout << "length:" << datas->getLength() << std::endl
             << "width:" << datas->getWidth() << std::endl
@@ -43,13 +48,13 @@ void AsciiBasicCanvas::info() const {
   this->show();
 }
 
-std::string AsciiBasicCanvas::toString() const {
+std::string AsciiBasicCanvas::toString() const noexcept {
   return this->toAsciiBasicString().toString();
 }
 
 AsciiBasicString &AsciiBasicCanvas::operator[](const Coord2d &coord) {
   if (!isCoordinate(coord))
-    throw AsciiBasicException(__FUNC__, "coord非法!");
+    throw AsciiBasicException("coord非法!");
 
   return (*datas)[coord];
 }
@@ -57,14 +62,14 @@ AsciiBasicString &AsciiBasicCanvas::operator[](const Coord2d &coord) {
 const AsciiBasicString &
 AsciiBasicCanvas::operator[](const Coord2d &coord) const {
   if (!isCoordinate(coord))
-    throw AsciiBasicException(__FUNC__, "coord非法!");
+    throw AsciiBasicException("coord非法!");
 
   return (*datas)[coord];
 }
 
 const AsciiBasicString &AsciiBasicCanvas::operator()(int x, int y) const {
   if (!isCoordinate(Vec2d(x, y)))
-    throw AsciiBasicException(__FUNC__, "coord非法!");
+    throw AsciiBasicException("coord非法!");
 
   return (*datas)(x, y);
 }
@@ -72,27 +77,29 @@ const AsciiBasicString &AsciiBasicCanvas::operator()(int x, int y) const {
 void AsciiBasicCanvas::setCanvas(const Coord2d &coord,
                                  const AsciiBasicString &fill) {
   if (!isCoordinate(coord))
-    throw AsciiBasicException(__FUNC__, "coord非法!");
+    throw AsciiBasicException("coord非法!");
 
   if (fill == datas->getElement(coord))
     return;
 
   auto &index = (*datas)[coord];
 
-  if (fill.size() >= block_length)
+  if (fill.size() > block_length)
     index = cutText(fill, block_length - 1);
+  else if (fill.size() == block_length)
+    index = fill;
   else
     index = overlapText(index, fill, 0, true);
 }
 
 AsciiBasicString AsciiBasicCanvas::getCanvas(const Coord2d &coord) const {
   if (!isCoordinate(coord))
-    throw AsciiBasicException(__FUNC__, "coord非法!");
+    throw AsciiBasicException("coord非法!");
 
   return this->datas->getElement(coord);
 }
 
-AsciiBasicString AsciiBasicCanvas::toAsciiBasicString() const {
+AsciiBasicString AsciiBasicCanvas::toAsciiBasicString() const noexcept {
   AsciiBasicString ret;
   const int length = datas->getLength();
   const int width = datas->getWidth();
@@ -110,7 +117,7 @@ AsciiBasicString AsciiBasicCanvas::toAsciiBasicString() const {
   return ret;
 }
 
-void AsciiBasicCanvas::clear() {
+void AsciiBasicCanvas::clear() noexcept {
   this->block_length = 0;
   this->datas->clear();
 }
@@ -119,9 +126,9 @@ void AsciiBasicCanvas::save(const std::string &path) const {
   std::ofstream outFile(path.c_str());
 
   if (!outFile.is_open())
-    throw AsciiBasicException(__FUNC__, FileNotExist);
+    throw AsciiBasicException(FileNotExist);
 
-  outFile << serialize(this);
+  outFile << serialize(*this);
 
   outFile.close();
 }
@@ -129,33 +136,35 @@ void AsciiBasicCanvas::save(const std::string &path) const {
 void AsciiBasicCanvas::load(const std::string &path) {
   const std::filesystem::path file_path(path);
   if (file_path.extension().string() != ".asc2")
-    throw AsciiBasicException(__FUNC__, "该文件不是asc2文件!");
+    throw AsciiBasicException("该文件不是asc2文件!");
 
   const std::string fileData = getFileData(path);
   deserializeType(*this, fileData);
 }
 
-void AsciiBasicCanvas::show() const { std::cout << this->toAsciiBasicString(); }
+void AsciiBasicCanvas::show() const noexcept {
+  std::cout << this->toAsciiBasicString();
+}
 
-bool AsciiBasicCanvas::isCoordinate(const Coord2d &coord) const {
+bool AsciiBasicCanvas::isCoordinate(const Coord2d &coord) const noexcept {
   return datas->isCoordinate(coord);
 }
 
-COORD AsciiBasicCanvas::toConsoleCoord(const Coord2d &coord) const {
+COORD AsciiBasicCanvas::toConsoleCoord(const Coord2d &coord) const noexcept {
   COORD ret;
   ret.X = static_cast<short>(coord.x * block_length);
   ret.Y = static_cast<short>(coord.y);
   return ret;
 }
 
-bool AsciiBasicCanvas::operator==(const AsciiBasicCanvas &canvas) const {
+bool AsciiBasicCanvas::operator==(
+    const AsciiBasicCanvas &canvas) const noexcept {
   return (*this->datas == *canvas.datas &&
-          this->block_length == canvas.block_length)
-             ? true
-             : false;
+          this->block_length == canvas.block_length);
 }
 
-bool AsciiBasicCanvas::operator!=(const AsciiBasicCanvas &canvas) const {
+bool AsciiBasicCanvas::operator!=(
+    const AsciiBasicCanvas &canvas) const noexcept {
   return !(*this == canvas);
 }
 
@@ -183,7 +192,7 @@ std::string AsciiBasicCanvas::getSerializeStr() const {
 void AsciiBasicCanvas::loadSerializeStr(const std::string &str) {
   const auto tokens = bracketMatch(str);
   if (tokens.size() < 2)
-    throw AsciiBasicException(__FUNC__, FileFormatError);
+    throw AsciiBasicException(FileFormatException);
 
   deserializeType(block_length, tokens[0]);
   deserializeType(*datas, tokens[1]);

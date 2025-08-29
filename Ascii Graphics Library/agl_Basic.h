@@ -1,6 +1,6 @@
 ﻿/**
  *
- *  @file      agl_Basic.h
+ *  @file      agl_basic.h
  *  @brief     包括基本函数的全部声明和部分实现
  *  @details   ~
  *  @author    0xZed_
@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "at_Tools.h"
+#include "at_tools.h"
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
@@ -35,6 +35,20 @@ using namespace AsciiTools;
  *  @author    0xZed_
  */
 namespace AsciiGL {
+const std::string LABEL_LAYER_DEFAULT = "untitled_layer";
+const std::string LABEL_LAYER_BACKGROUND = "background_layer";
+const std::string LABEL_LAYER_TEXT = "text_layer";
+
+// template <typename T> class SharedPtr;
+class AsciiBasicCanvas;
+class AsciiBasicLayer;
+class AsciiBasicLayerMngr;
+
+// using AsciiCanvas = std::unique_ptr<AsciiBasicCanvas>;
+// using AsciiLayer = std::shared_ptr<AsciiBasicLayer>;
+//  using AsciiLayer = SharedPtr<AsciiBasicLayer>;
+// using AsciiLayerMngr = std::unique_ptr<AsciiBasicLayerMngr>;
+//  using AsciiObject = SharedPtr<AsciiBasicObject>;
 /////////////////////////////////////////////////////////////////
 
 /**
@@ -53,8 +67,8 @@ AsciiAPI double getY(Coord2d coordA, Coord2d coordB, double x);
  *  @param  element - 指定元素
  *  @retval         - 指定元素的下标
  */
-template <typename T>
-AsciiAPI int getIndex(const std::vector<T> &vec, const T &element);
+// template <typename T>
+// AsciiAPI int getIndex(const std::vector<T> &vec, const T &element);
 
 /**
  *  @brief  判断容器是否存在指定元素
@@ -63,8 +77,8 @@ AsciiAPI int getIndex(const std::vector<T> &vec, const T &element);
  *  @param  element - 指定元素
  *  @retval         - 是否存在该元素的布尔值
  */
-template <typename T>
-AsciiAPI bool isExist(const std::vector<T> &vec, const T &element);
+// template <typename T>
+// AsciiAPI bool isExist(const std::vector<T> &vec, const T &element);
 
 /**
  *  @brief  获取名字/取名器(随着名字重复而添加编号)
@@ -72,7 +86,7 @@ AsciiAPI bool isExist(const std::vector<T> &vec, const T &element);
  *  @param  prefix - 字符串前缀
  *  @retval        - 自动处理过的标识符/名字
  */
-AsciiAPI std::string makeName(const std::string &prefix);
+// AsciiAPI std::string makeName(const std::string &prefix);
 
 /**
  *  @brief  将字符串长度等价转换为Block（块）的个数
@@ -88,7 +102,7 @@ AsciiAPI int getBlockNumber(int strSize, int block_length);
  *  @retval      - 文件数据字符串
  */
 AsciiAPI std::string getFileData(const std::string &path);
-
+/*
 template <typename T>
 AsciiAPI inline int getIndex(const std::vector<T> &vec, const T &element) {
   const int size = vec.size();
@@ -106,5 +120,5 @@ AsciiAPI inline bool isExist(const std::vector<T> &vec, const T &element) {
       return true;
   }
   return false;
-}
+}*/
 } // namespace AsciiGL

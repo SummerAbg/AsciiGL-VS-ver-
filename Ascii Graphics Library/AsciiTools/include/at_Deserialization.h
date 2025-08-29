@@ -1,7 +1,7 @@
 #pragma once
 
-#include "at_Basic.h"
-#include "at_TypeConvert.h"
+#include "at_basic.h"
+#include "at_typeconvert.h"
 
 namespace AsciiTools {
 template <typename T> void deserializeType(T &obj, const std::string &str) {
@@ -13,7 +13,7 @@ template <typename T> void deserializeType(T &obj, const std::string &str) {
     const TypeDecorator<T, std::string> decorator(str);
     obj = decorator.toTargetType();
   } else {
-    deserialize(&obj, str);
+    deserialize(obj, str);
   }
 }
 } // namespace AsciiTools

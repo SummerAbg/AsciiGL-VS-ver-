@@ -1,34 +1,30 @@
-#include "at_Exception.h"
+#include "at_exception.h"
 
 namespace AsciiTools {
-AsciiBasicException::AsciiBasicException(const std::string &where,
-                                         const BasicException &error) {
-  this->where = where;
-  this->error = error;
-  this->error_str = std::string("No describe");
-}
+const char *AsciiBasicException::what() const noexcept {
+  static std::string ret;
+  if (where == "") {
+    ret = std::format(
+        "文件: {}\n函数: {}\n行号: {}\n异常说明: ", location.file_name(),
+        location.function_name(), location.line());
+  } else {
+    ret = std::format("在 {} 中出现了意外的 ", where);
+  }
 
-AsciiBasicException::AsciiBasicException(const std::string &where,
-                                         const std::string &error_str) {
-  this->where = where;
-  this->error = BasicException();
-  this->error_str = error_str;
-}
+  switch (exp_type) {
+  case Default:
+    ret += this->exp_description;
+    break;
 
-std::string AsciiBasicException::what() const {
-  std::string ret;
-  ret += "在 " + where + " 中出现了意外的 ";
-
-  switch (error) {
-  case CustomError:
-    ret += error_str;
+  case CustomException:
+    ret += this->exp_description;
     break;
 
   case FileNotExist:
     ret += "文件不存在!";
     break;
 
-  case FileFormatError:
+  case FileFormatException:
     ret += "文件格式错误!";
     break;
 
@@ -40,11 +36,14 @@ std::string AsciiBasicException::what() const {
     ret += "未初始化!";
     break;
 
+  case NullptrException:
+    ret += "空指针!";
+    break;
+
   default:
-    ret += "BUG!";
+    ret += "AsciiTools::AsciiBasicException类出现异常!";
     break;
   }
-  ret += "\n";
-  return ret;
+  return ret.c_str();
 }
 } // namespace AsciiTools

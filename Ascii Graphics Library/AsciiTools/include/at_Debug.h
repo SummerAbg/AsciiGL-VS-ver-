@@ -1,6 +1,6 @@
 #pragma once
 
-#include "at_BasicString.h"
+#include "at_string.h"
 #include <chrono>
 #include <iostream>
 #include <thread>
@@ -24,6 +24,28 @@ public:
 private:
   TimePoint start_t;
   TimePoint end_t;
+};
+
+// 时间测量类
+class TimeMeasurer {
+public:
+  using Time_point = std::chrono::steady_clock::time_point;
+
+  TimeMeasurer(std::atomic<double> *delta_time) {
+    this->delta_time = delta_time;
+    this->start_t = std::chrono::high_resolution_clock::now();
+  }
+
+  ~TimeMeasurer() {
+    end_t = std::chrono::high_resolution_clock::now();
+    const std::chrono::duration<double> delta_t = end_t - start_t;
+    (*delta_time).store(delta_t.count());
+  }
+
+private:
+  Time_point start_t;
+  Time_point end_t;
+  std::atomic<double> *delta_time;
 };
 
 void winApiText(const COORD &coord, const std::string &str);

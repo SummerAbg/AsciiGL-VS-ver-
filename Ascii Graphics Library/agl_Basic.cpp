@@ -1,5 +1,5 @@
-#include "agl_Basic.h"
-#include "at_Exception.h"
+#include "agl_basic.h"
+#include "at_exception.h"
 
 namespace AsciiGL {
 double getY(Coord2d coordA, Coord2d coordB, double x) {
@@ -15,7 +15,7 @@ double getY(Coord2d coordA, Coord2d coordB, double x) {
     return 0;
 }
 
-std::string makeName(const std::string &prefix) {
+/* std::string makeName(const std::string &prefix) {
   static std::vector<std::string> nameLib;
   static std::vector<int> numbers;
 
@@ -36,7 +36,7 @@ std::string makeName(const std::string &prefix) {
   nameLib.emplace_back(name);
 
   return name;
-}
+}*/
 
 int getBlockNumber(int strSize, int block_length) {
   const double d_str_size = static_cast<double>(strSize);
@@ -54,7 +54,7 @@ std::string getFileData(const std::string &path) {
   std::string ret;
 
   if (!reader.is_open())
-    throw AsciiBasicException(__FUNC__, FileNotExist);
+    throw AsciiBasicException(FileNotExist);
 
   while (std::getline(reader, buffer)) {
     ret += buffer + "\n";

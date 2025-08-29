@@ -15,108 +15,126 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AsciiTools\src\at_Basic.cpp">
+    <ClCompile Include="AsciiTools\src\at_basic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AsciiTools\src\at_BasicChar.cpp">
+    <ClCompile Include="AsciiTools\src\at_char.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AsciiTools\src\at_BasicObject.cpp">
+    <ClCompile Include="AsciiTools\src\at_string.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AsciiTools\src\at_BasicString.cpp">
+    <ClCompile Include="AsciiTools\src\at_debug.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AsciiTools\src\at_Debug.cpp">
+    <ClCompile Include="AsciiTools\src\at_exception.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AsciiTools\src\at_Exception.cpp">
+    <ClCompile Include="AsciiTools\src\at_textcolor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AsciiTools\src\at_TextColor.cpp">
+    <ClCompile Include="AsciiTools\src\at_tools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AsciiTools\src\at_Tools.cpp">
+    <ClCompile Include="AsciiTools\src\at_typeconvert.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AsciiTools\src\at_TypeConvert.cpp">
+    <ClCompile Include="agl_basic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="agl_Basic.cpp">
+    <ClCompile Include="agl_canvas.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="agl_BasicCanvas.cpp">
+    <ClCompile Include="agl_layer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="agl_BasicLayer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="agl_BasicLayerMngr.cpp">
+    <ClCompile Include="agl_layermngr.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="graphics.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AsciiTools\include\at_Basic.h">
+    <ClInclude Include="AsciiTools\include\at_basic.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_BasicChar.h">
+    <ClInclude Include="AsciiTools\include\at_char.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_BasicObject.h">
+    <ClInclude Include="AsciiTools\include\at_basicobject.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_BasicString.h">
+    <ClInclude Include="AsciiTools\include\at_string.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_Coordinate2d.h">
+    <ClInclude Include="AsciiTools\include\at_coordinate.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_Debug.h">
+    <ClInclude Include="AsciiTools\include\at_debug.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_Deserialization.h">
+    <ClInclude Include="AsciiTools\include\at_deserialization.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_Exception.h">
+    <ClInclude Include="AsciiTools\include\at_exception.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_Matrix2d.h">
+    <ClInclude Include="AsciiTools\include\at_matrix2d.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_Serialization.h">
+    <ClInclude Include="AsciiTools\include\at_serialization.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_TextColor.h">
+    <ClInclude Include="AsciiTools\include\at_textcolor.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_Tools.h">
+    <ClInclude Include="AsciiTools\include\at_tools.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_TypeConvert.h">
+    <ClInclude Include="AsciiTools\include\at_typeconvert.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="agl_AbstractImage.h">
+    <ClInclude Include="agl_abstract_image.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="agl_Basic.h">
+    <ClInclude Include="agl_basic.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="agl_BasicCanvas.h">
+    <ClInclude Include="agl_canvas.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="agl_BasicLayer.h">
+    <ClInclude Include="agl_layer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="agl_BasicLayerMngr.h">
+    <ClInclude Include="agl_layermngr.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="graphics.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AsciiTools\include\at_Option.h">
+    <ClInclude Include="AsciiTools\include\at_consoleoption.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AsciiTools\include\at_basicmanager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AsciiTools\include\at_joystick.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AsciiTools\include\at_thread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AsciiTools\include\at_vector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AsciiTools\include\at_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AsciiTools\include\at_ptrvector.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

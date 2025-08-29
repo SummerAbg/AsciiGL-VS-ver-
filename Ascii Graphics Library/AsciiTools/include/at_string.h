@@ -1,43 +1,51 @@
 #pragma once
 
-#include "at_BasicChar.h"
+#include "at_char.h"
+#include "at_vector.h"
 
 namespace AsciiTools {
 // 基本字符串类
 class AsciiBasicString : public AsciiBasicObject {
 public:
   using Text = std::vector<AsciiBasicChar>;
+  // using Text = Vector<AsciiChar>;
   using pText = std::unique_ptr<Text>;
 
   // 构造基本字符串
   AsciiBasicString();
+  AsciiBasicString(const char *str, const AsciiTextColorData &clr,
+                   const AsciiTrprData &trpr);
+  AsciiBasicString(const std::string &str, const AsciiTextColorData &clr,
+                   const AsciiTrprData &trpr);
   AsciiBasicString(
       const char *str, bool isTrpr = false,
       const AsciiTextColor clr = AsciiBasicChar::getDefaultColor());
   AsciiBasicString(
       const std::string &str, bool isTrpr = false,
       const AsciiTextColor clr = AsciiBasicChar::getDefaultColor());
-  AsciiBasicString(const char *str, const AsciiTextColorData &clr,
-                   const AsciiTrprData &trpr);
-  AsciiBasicString(const std::string &str, const AsciiTextColorData &clr,
-                   const AsciiTrprData &trpr);
   AsciiBasicString(const AsciiBasicChar &chr);
   AsciiBasicString(const AsciiBasicString &str);
   AsciiBasicString(AsciiBasicString &&str) noexcept;
 
+  AsciiBasicString(const std::string &str, const AsciiTextColor clr);
+
   // 输出信息
-  void info() const override;
+  void info() const noexcept override;
   // AsciiBasicString转换为std::string
-  std::string toString() const override;
+  std::string toString() const noexcept override;
 
   // 获取头尾地址的函数(为了能够使用c++11的新特性)
-  auto begin() const { return text->begin(); }
-  auto end() const { return text->end(); }
+  auto begin() const noexcept { return text->begin(); }
+  auto end() const noexcept { return text->end(); }
 
   // 基本运算符
-  bool operator==(const AsciiBasicString &str) const;
+  bool operator==(const AsciiBasicString &str) const noexcept {
+    return *this->text == *str.text;
+  }
 
-  bool operator!=(const AsciiBasicString &str) const;
+  bool operator!=(const AsciiBasicString &str) const noexcept {
+    return !(*this == str);
+  }
 
   AsciiBasicString &operator+=(const AsciiBasicString &str);
   AsciiBasicString &operator+=(AsciiBasicString &&str) noexcept;
@@ -60,10 +68,10 @@ public:
   // void insert(int index, const AsciiBasicChar &chr);
 
   // 删除字符串指定位置的字符
-  void del(int index);
+  void remove(int index);
   // 给字符串的末尾添加字符
   void append(const AsciiBasicChar &chr);
-  void append(AsciiBasicChar &&chr) noexcept;
+  // void append(AsciiBasicChar &&chr) noexcept;
 
   void append(const AsciiBasicString &str);
   void append(AsciiBasicString &&str) noexcept;
@@ -72,7 +80,7 @@ public:
   void clear();
 
   // 获取字符串大小
-  int size() const { return static_cast<int>(text->size()); }
+  size_t size() const noexcept { return text->size(); }
 
   // 获取透明数据
   AsciiTrprData getTrprData() const;
@@ -95,24 +103,4 @@ private:
 
 const AsciiBasicString TRPRSTR = {
     "  ", true, {ASCII_COLOR_GREY, ASCII_COLOR_BLACK}};
-
-// 获取自适应字符串
-AsciiBasicString getAdaptiveStr(const AsciiBasicChar &chr);
-
-// 剪裁字符串(获取index位置及之前的字符串)
-AsciiBasicString cutText(const AsciiBasicString &str, int index);
-
-// 重叠字符串
-// 将strB重叠在strA的position的位置上
-// 当isLimit为true时，得到的字符串大小以strA为标准
-// 如:
-//    ①当strA的长度大于strB的长度且处于非限定模式下:
-//      "egg"重叠在"apple"的0位置上，得到"eggle"
-//    ②当strA的长度小于strB的长度且处于非限定模式下:
-//      "apple"重叠在"egg"的0位置上，得到"apple"
-//    ③当strA的长度小于strB的长度且处于限定模式下:
-//      "apple"重叠在"egg"的0位置上，得到"app"
-AsciiBasicString overlapText(const AsciiBasicString &str_a,
-                             const AsciiBasicString &str_b, int psotion = 0,
-                             bool is_limit = false);
 } // namespace AsciiTools

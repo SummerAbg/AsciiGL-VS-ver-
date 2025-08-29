@@ -1,4 +1,4 @@
-#include "at_Tools.h"
+#include "at_tools.h"
 
 namespace AsciiTools {
 AsciiColor::AsciiColor() {
@@ -19,18 +19,17 @@ AsciiColor::AsciiColor(const std::string &str) {
   try {
     loadSerializeStr(str);
   } catch (const AsciiBasicException &error) {
-    throw AsciiBasicException(__FUNC__, error.what());
+    // throw AsciiBasicException(error.what());
+    throw error;
   }
 }
 
-bool AsciiColor::operator==(const AsciiColor &color) const {
+bool AsciiColor::operator==(const AsciiColor &color) const noexcept {
   return (this->r == color.r && this->g == color.g && this->b == color.b &&
-          this->a == color.a)
-             ? true
-             : false;
+          this->a == color.a);
 }
 
-bool AsciiColor::operator!=(const AsciiColor &color) const {
+bool AsciiColor::operator!=(const AsciiColor &color) const noexcept {
   return !(*this == color);
 }
 
@@ -51,9 +50,8 @@ void AsciiColor::loadSerializeStr(const std::string &str) {
   const auto tokens = bracketMatch(str);
 
   if (tokens.size() != paramCount_asciicolor) {
-    throw AsciiBasicException(__FUNC__,
-                              "str->rgba时发现字符串读取错误(tokens.size()!=" +
-                                  std::to_string(paramCount_asciicolor) + ")");
+    throw AsciiBasicException("str->rgba时发现字符串读取错误(tokens.size()!=" +
+                              std::to_string(paramCount_asciicolor) + ")");
   }
 
   deserializeType(r, tokens[0]);
@@ -72,19 +70,20 @@ AsciiTextColor::AsciiTextColor(const std::string &str) {
   try {
     loadSerializeStr(str);
   } catch (const AsciiBasicException &error) {
-    throw AsciiBasicException(__FUNC__, error.what());
+    // throw AsciiBasicException(error.what());
+    throw error;
   }
 }
 
-bool AsciiTextColor::operator==(const AsciiTextColor &color) const {
+bool AsciiTextColor::operator==(const AsciiTextColor &color) const noexcept {
   return (this->color_text == color.color_text &&
-          this->color_background == color.color_background)
-             ? true
-             : false;
+          this->color_background == color.color_background);
 }
-bool AsciiTextColor::operator!=(const AsciiTextColor &color) const {
+
+bool AsciiTextColor::operator!=(const AsciiTextColor &color) const noexcept {
   return !((*this) == color);
 }
+
 void AsciiTextColor::info() const {
   std::cout << "AsciiTextColor对象" << std::endl;
   std::cout << this->toString() << std::endl;

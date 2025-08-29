@@ -1,7 +1,7 @@
 #pragma once
 
-#include "at_Basic.h"
-#include "at_Exception.h"
+#include "at_basic.h"
+#include "at_exception.h"
 
 namespace AsciiTools {
 class Option {
@@ -16,19 +16,19 @@ public:
   std::string getArg(int index) const {
     if (index >= 0 && index < args.size())
       return args[index];
-    throw AsciiBasicException(__FUNC__, ArrayOverflow);
+    throw AsciiBasicException(ArrayOverflow);
   }
 
   std::string operator[](int index) const {
     if (index >= 0 && index < args.size())
       return getArg(index);
-    throw AsciiBasicException(__FUNC__, ArrayOverflow);
+    throw AsciiBasicException(ArrayOverflow);
   }
 
-  int getArgc() const { return argc; }
+  int getArgc() const noexcept { return argc; }
 
-  auto begin() { return args.begin(); }
-  auto end() { return args.end(); }
+  auto begin() const noexcept { return args.begin(); }
+  auto end() const noexcept { return args.end(); }
 
 private:
   std::vector<std::string> args;

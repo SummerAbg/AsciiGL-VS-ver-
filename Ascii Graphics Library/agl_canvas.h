@@ -1,6 +1,6 @@
 ﻿/**
  *
- *  @file      agl_BasicCanvas.h
+ *  @file      agl_canvas.h
  *  @brief     包括基本字符串画布类的实现
  *  @details   ~
  *  @author    0xZed_
@@ -10,8 +10,8 @@
  */
 #pragma once
 
-#include "agl_AbstractImage.h"
-#include "agl_Basic.h"
+#include "agl_abstract_image.h"
+#include "agl_basic.h"
 
 using AsciiTools::AsciiBasicString;
 
@@ -48,7 +48,13 @@ public:
    *  @brief AsciiBasicCanvas object constructor
    *  @param path - 文件路径
    */
-  AsciiBasicCanvas(const std::string &path);
+  AsciiBasicCanvas(std::string &&path);
+
+  /**
+   *  @brief AsciiBasicCanvas object constructor
+   *  @param content - 内容
+   */
+  AsciiBasicCanvas(const AsciiBasicString &content);
 
   /**
    *  @brief AsciiBasicCanvas object constructor
@@ -66,18 +72,20 @@ public:
    *  @brief  Return iterator to beginning
    *  @retval  - iterator to beginning
    */
-  auto begin() const { return datas->begin(); }
+  auto begin() const noexcept { return datas->begin(); }
 
   /**
    *  @brief  Return iterator to end
    *  @retval  - iterator to end
    */
-  auto end() const { return datas->end(); }
+  auto end() const noexcept { return datas->end(); }
 
   /**
    *  @brief 输出画布信息
    */
-  virtual void info() const;
+  virtual void info() const noexcept override;
+
+  size_t size() const noexcept { return datas->size(); }
 
   AsciiBasicString &operator[](const Coord2d &coord);
   const AsciiBasicString &operator[](const Coord2d &coord) const;
@@ -105,43 +113,43 @@ public:
    *  @brief  获取整个画布数据
    *  @retval  - 画布数据（画布字符串集合）
    */
-  CanvasData getCanvas() const { return *datas; }
+  CanvasData getCanvas() const noexcept { return *datas; }
 
   /**
    *  @brief  获取画布组成的字符串
    *  @retval  - 字符串
    */
-  std::string toString() const;
+  virtual std::string toString() const noexcept override;
 
   /**
    *  @brief  获取画布组成的AsciiBasicString字符串
    *  @retval  - 由画布数据组成的AsciiBasicString字符串
    */
-  AsciiBasicString toAsciiBasicString() const;
+  AsciiBasicString toAsciiBasicString() const noexcept;
 
   /**
    *  @brief  获取画布长度
    *  @retval  - 返回画布长度
    */
-  int getLength() const { return datas->getLength(); }
+  int getLength() const noexcept { return datas->getLength(); }
 
   /**
    *  @brief  获取画布宽度
    *  @retval  - 返回画布宽度
    */
-  int getWidth() const { return datas->getWidth(); }
+  int getWidth() const noexcept { return datas->getWidth(); }
 
   /**
    *  @brief  获取块长度
    *  @retval  - 返回块长度
    */
-  int getBlockLength() const { return block_length; }
+  int getBlockLength() const noexcept { return block_length; }
 
   /**
    *  @brief  获取背景字符串
    *  @retval  - 返回背景字符串
    */
-  AsciiBasicString getBackgroundStr() const {
+  AsciiBasicString getBackgroundStr() const noexcept {
     return datas->getBackgroundElement();
   }
 
@@ -160,45 +168,45 @@ public:
   /**
    *  @brief 清空画布数据
    */
-  void clear();
+  void clear() noexcept;
 
   /**
    *  @brief 展示画布
    */
-  void show() const;
+  void show() const noexcept;
 
   /**
    *  @brief  判断指定坐标是否合法
    *  @param  coord - 指定坐标
    *  @retval       - 返回指定坐标是否合法的布尔值
    */
-  bool isCoordinate(const Coord2d &coord) const;
+  bool isCoordinate(const Coord2d &coord) const noexcept;
 
   /**
    *  @brief  画布指定坐标转换为控制台坐标
    *  @param  coord - 指定坐标
    *  @retval       - 返回控制台坐标
    */
-  COORD toConsoleCoord(const Coord2d &coord) const;
+  COORD toConsoleCoord(const Coord2d &coord) const noexcept;
 
-  bool operator==(const AsciiBasicCanvas &canvas) const;
-  bool operator!=(const AsciiBasicCanvas &canvas) const;
+  bool operator==(const AsciiBasicCanvas &canvas) const noexcept;
+  bool operator!=(const AsciiBasicCanvas &canvas) const noexcept;
 
   AsciiBasicCanvas &operator=(const AsciiBasicCanvas &canvas);
   AsciiBasicCanvas &operator=(AsciiBasicCanvas &&canvas) noexcept;
 
-private:
+protected:
   /**
    *  @brief  返回对象序列化字符串
    *  @retval  - 对象序列化字符串
    */
-  std::string getSerializeStr() const;
+  virtual std::string getSerializeStr() const override;
 
   /**
    *  @brief 加载对象序列化字符串
    *  @param str - 对象序列化字符串
    */
-  void loadSerializeStr(const std::string &str);
+  virtual void loadSerializeStr(const std::string &str) override;
 
 protected:
   int block_length; // 块长度(基本长度单元)

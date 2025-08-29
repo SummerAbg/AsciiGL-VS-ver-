@@ -1,5 +1,5 @@
-#include "at_BasicChar.h"
-#include "at_Tools.h"
+#include "at_char.h"
+#include "at_tools.h"
 
 namespace AsciiTools {
 char AsciiBasicChar::trprChr = ' ';
@@ -7,9 +7,11 @@ AsciiTextColor AsciiBasicChar::default_clr = {ASCII_COLOR_WHITE,
                                               ASCII_COLOR_BLACK};
 
 std::ostream &operator<<(std::ostream &output, const AsciiBasicChar &chr) {
-  static AsciiBasicChar buffer_chr;
+  // static AsciiBasicChar buffer_chr;
+  static AsciiTextColor buffer_clr;
 
-  if (chr.getColor() != buffer_chr.getColor())
+  // if (chr.getColor() != buffer_chr.getColor())
+  if (chr.getColor() != buffer_clr)
     setColor(chr.color);
 
   if (!chr.trprState)
@@ -17,8 +19,8 @@ std::ostream &operator<<(std::ostream &output, const AsciiBasicChar &chr) {
   else
     output << AsciiBasicChar::trprChr;
 
-  buffer_chr = chr;
-
+  // buffer_chr = chr;
+  buffer_clr = chr.getColor();
   return output;
 }
 
@@ -46,26 +48,26 @@ std::string AsciiBasicChar::toString() const {
   return std::string(1, character);
 }
 
-bool AsciiBasicChar::operator==(const AsciiBasicChar &chr) const {
+bool AsciiBasicChar::operator==(const AsciiBasicChar &chr) const noexcept {
   return (character == chr.getChr() && trprState == chr.isTrpr() &&
-          color == chr.getColor())
-             ? true
-             : false;
+          color == chr.getColor());
 }
 
-bool AsciiBasicChar::operator!=(const AsciiBasicChar &chr) const {
+bool AsciiBasicChar::operator!=(const AsciiBasicChar &chr) const noexcept {
   return !(*this == chr);
 }
 
-void AsciiBasicChar::setTrprChr(char chr) { trprChr = chr; }
+void AsciiBasicChar::setTrprChr(char chr) noexcept { trprChr = chr; }
 
-char AsciiBasicChar::getTrprChr() { return trprChr; }
+char AsciiBasicChar::getTrprChr() noexcept { return trprChr; }
 
-void AsciiBasicChar::setDefaultColor(const AsciiTextColor &clr) {
+void AsciiBasicChar::setDefaultColor(const AsciiTextColor &clr) noexcept {
   default_clr = clr;
 }
 
-AsciiTextColor AsciiBasicChar::getDefaultColor() { return default_clr; }
+AsciiTextColor AsciiBasicChar::getDefaultColor() noexcept {
+  return default_clr;
+}
 
 std::string AsciiBasicChar::getSerializeStr() const {
   return serializeType(character, trprState, color);
@@ -75,7 +77,7 @@ void AsciiBasicChar::loadSerializeStr(const std::string &str) {
   const auto tokens = bracketMatch(str);
 
   if (tokens.size() != 3)
-    throw AsciiBasicException(__FUNC__, FileFormatError);
+    throw AsciiBasicException(FileFormatException);
 
   deserializeType(character, tokens[0]);
   deserializeType(trprState, tokens[1]);

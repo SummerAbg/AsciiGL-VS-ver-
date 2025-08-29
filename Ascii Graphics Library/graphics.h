@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "agl_BasicLayerMngr.h"
+#include "agl_layermngr.h"
 
 namespace AsciiGL {
 /**
@@ -64,9 +64,9 @@ AsciiAPI void setText(AsciiBasicLayer &layer, Coord2d coord,
  *  @param text      - 指定文本
  *  @param layerName - 文本图层名称
  */
-AsciiAPI void setText(AsciiBasicLayerMngr &mngr, Coord2d coord,
-                      const AsciiBasicString &text,
-                      const std::string &layerName = makeName("textLayer"));
+AsciiAPI void
+setText(AsciiBasicLayerMngr &mngr, Coord2d coord, const AsciiBasicString &text,
+        const std::string &layerName = generateLabel(LABEL_LAYER_TEXT));
 
 /**
  *  @brief 在指定画布中设置指定字符串的边框（厚度默认为一个控制台字符单位）
@@ -127,6 +127,16 @@ AsciiAPI void winApiDraw(const AsciiBasicLayerMngr &mngr, bool isClean = false);
  *  @brief 隐藏光标
  */
 AsciiAPI void hideCursor();
+
+/**
+ *  @brief 初始化AsciiGL
+ */
+AsciiAPI void initAsciiGL();
+
+/**
+ *  @brief 关闭AsciiGL
+ */
+AsciiAPI void dropAsciiGL();
 
 #endif
 } // namespace AsciiGL

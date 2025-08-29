@@ -1,4 +1,4 @@
-#include "at_TypeConvert.h"
+#include "at_typeconvert.h"
 
 namespace AsciiTools {
 int stringToInt(const std::string &str) { return atoi(str.c_str()); }
@@ -13,10 +13,15 @@ bool stringToBool(const std::string &str) {
   else if (str == "false")
     return false;
   else
-    throw AsciiBasicException(__FUNC__, "str非法!(只能是true或false!)");
+    throw AsciiBasicException("str非法!(只能是true或false!)");
 }
 
 bool intToBool(int number) { return static_cast<bool>(number); }
+
+const char *intToCString(int number) {
+  static const char *ret = std::to_string(number).c_str();
+  return ret;
+}
 
 double stringToDouble(const std::string &str) { return std::stod(str); }
 

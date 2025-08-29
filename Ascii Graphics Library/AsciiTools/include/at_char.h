@@ -1,8 +1,8 @@
 #pragma once
 
-#include "at_Basic.h"
-#include "at_BasicObject.h"
-#include "at_TextColor.h"
+#include "at_basic.h"
+#include "at_basicobject.h"
+#include "at_textcolor.h"
 
 namespace AsciiTools {
 // 基本字符类
@@ -20,8 +20,8 @@ public:
   // AsciiBasicChar转换为std::string
   std::string toString() const override;
 
-  bool operator==(const AsciiBasicChar &chr) const;
-  bool operator!=(const AsciiBasicChar &chr) const;
+  bool operator==(const AsciiBasicChar &chr) const noexcept;
+  bool operator!=(const AsciiBasicChar &chr) const noexcept;
 
   friend std::ostream &operator<<(std::ostream &output,
                                   const AsciiBasicChar &chr);
@@ -29,26 +29,26 @@ public:
   friend std::istream &operator>>(std::istream &input, AsciiBasicChar &chr);
 
   // 设置透明字符
-  static void setTrprChr(char chr);
+  static void setTrprChr(char chr) noexcept;
   // 获取透明字符
-  static char getTrprChr();
+  static char getTrprChr() noexcept;
   // 设置默认颜色
-  static void setDefaultColor(const AsciiTextColor &clr);
+  static void setDefaultColor(const AsciiTextColor &clr) noexcept;
   // 获取默认颜色
-  static AsciiTextColor getDefaultColor();
+  static AsciiTextColor getDefaultColor() noexcept;
 
   // 获取字符
-  char getChr() const { return character; }
+  char getChr() const noexcept { return character; }
   // 设置字符
-  void setChr(char chr) { character = chr; }
+  void setChr(char chr) noexcept { character = chr; }
   // 获取透明状态
-  bool isTrpr() const { return trprState; }
+  bool isTrpr() const noexcept { return trprState; }
   // 设置透明
-  void setTrpr(bool trprState) { this->trprState = trprState; }
+  void setTrpr(bool trprState) noexcept { this->trprState = trprState; }
   // 获取颜色
-  AsciiTextColor getColor() const { return color; }
+  AsciiTextColor getColor() const noexcept { return color; }
   // 设置颜色
-  void setColor(const AsciiTextColor &clr) { color = clr; }
+  void setColor(const AsciiTextColor &clr) noexcept { color = clr; }
 
 private:
   std::string getSerializeStr() const override;

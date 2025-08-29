@@ -1,6 +1,6 @@
 ﻿/**
  *
- *  @file      agl_AbstractImage.h
+ *  @file      agl_abstract_image.h
  *  @brief     包括图像抽象类的声明
  *  @details   ~
  *  @author    0xZed_
@@ -10,8 +10,8 @@
  */
 #pragma once
 
-#include "at_BasicString.h"
-#include "at_Matrix2d.h"
+#include "at_matrix2d.h"
+#include "at_string.h"
 
 using namespace AsciiTools;
 
@@ -27,6 +27,7 @@ namespace AsciiGL {
  */
 template <typename DataType> class AbstractImage : public Matrix2d<DataType> {
 public:
+  virtual ~AbstractImage() {}
   /**
    *  @brief 存储图像文件至指定文件路径
    *  @param path - 指定图像文件路径

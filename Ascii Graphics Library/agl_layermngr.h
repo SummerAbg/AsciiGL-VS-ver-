@@ -1,6 +1,6 @@
 ﻿/**
  *
- *  @file      agl_BasicLayerMngr.h
+ *  @file      agl_layermngr.h
  *  @brief     包括基本字符串图层管理器类的实现
  *  @details   ~
  *  @author    0xZed_
@@ -10,7 +10,9 @@
  */
 #pragma once
 
-#include "agl_BasicLayer.h"
+#include "agl_layer.h"
+#include "at_basicmanager.h"
+#include "at_vector.h"
 
 namespace AsciiGL {
 /**
@@ -21,10 +23,12 @@ namespace AsciiGL {
  *  @date    19.07.2024
  *
  */
-class AsciiAPI AsciiBasicLayerMngr {
+class AsciiAPI AsciiBasicLayerMngr
+    : public BasicManager<AsciiBasicCanvas, AsciiBasicLayer> {
 public:
-  using Layers = std::vector<AsciiBasicLayer>;
-  using pLayers = std::shared_ptr<Layers>;
+  // using Layers = std::vector<AsciiBasicLayer>;
+  using ElementType = Vector<std::shared_ptr<AsciiBasicLayer>>;
+  // using pLayers = std::shared_ptr<Layers>;
 
   /**
    *  @brief AsciiBasicLayerMngr object constructor
@@ -35,9 +39,9 @@ public:
    *  @brief AsciiBasicLayerMngr object constructor
    *  @param layers - 指定图层容器
    */
-  AsciiBasicLayerMngr(const Layers &layers) {
+  /* AsciiBasicLayerMngr(const Layers &layers) {
     this->layers = std::make_shared<Layers>(layers);
-  }
+  }*/
 
   /**
    *  @brief AsciiBasicLayerMngr object constructor
@@ -52,69 +56,89 @@ public:
    *  @brief AsciiBasicLayerMngr object constructor
    *  @param mngr - 图层管理器
    */
-  AsciiBasicLayerMngr(const AsciiBasicLayerMngr &mngr);
+  // AsciiBasicLayerMngr(const AsciiBasicLayerMngr &mngr);
 
   /**
    *  @brief AsciiBasicLayerMngr object constructor
    *  @param mngr - 图层管理器
    */
-  AsciiBasicLayerMngr(AsciiBasicLayerMngr &&mngr) noexcept;
+  // AsciiBasicLayerMngr(AsciiBasicLayerMngr &&mngr) noexcept;
+
+  /**
+   *  @brief AsciiBasicLayerMngr object constructor
+   *  @param layers - 图层初始化列表
+   */
+  AsciiBasicLayerMngr(const std::initializer_list<AsciiBasicLayer> &layers);
 
   /**
    *  @brief  Return iterator to beginning
    *  @retval  - iterator to beginning
    */
-  auto begin() const { return layers->begin(); }
+  // auto begin() const { return layers->begin(); }
 
   /**
    *  @brief  Return iterator to end
    *  @retval  - iterator to end
    */
-  auto end() const { return layers->end(); }
+  // auto end() const { return layers->end(); }
 
   /**
    *  @brief 添加指定图层
    *  @param layer - 指定图层
    */
-  void append(const AsciiBasicLayer &layer);
+  void append(const AsciiBasicLayer &layer) override;
 
   /**
    *  @brief 添加指定图层
    *  @param layer - 指定图层
    */
-  void append(AsciiBasicLayer &&layer) noexcept;
+  void append(AsciiBasicLayer &&layer) noexcept override;
 
   /**
    *  @brief 添加指定图层组
    *  @param layers - 图层组
    */
-  void append(const Layers &layers);
+  // void append(const Layers &layers);
 
   /**
    *  @brief 添加指定图层组
    *  @param layers - 图层组
    */
-  void append(Layers &&layers) noexcept;
+  // void append(Layers &&layers) noexcept;
+
+  /**
+   *  @brief 添加指定图层组
+   *  @param layers - 图层组
+   */
+  void append(const std::initializer_list<AsciiBasicLayer> &layers) override;
 
   /**
    *  @brief 删除指定图层 (失败时抛出异常)
    *  @param name - 指定图层名称
    */
-  void remove(const std::string &name);
+  // void remove(const std::string &name);
 
   /**
    *  @brief 在指定位置后插入指定图层 (失败时抛出异常)
    *  @param layerCnt - 指定位置
    *  @param layer    - 指定图层
    */
-  void insert(int layerCnt, const AsciiBasicLayer &layer);
+  void insert(int layerCnt, const AsciiBasicLayer &layer) override;
 
   /**
    *  @brief 在指定位置后插入指定图层容器 (失败时抛出异常)
    *  @param layerCnt - 指定位置
    *  @param layers   - 指定图层容器
    */
-  void insert(int layerCnt, const Layers &layers);
+  // void insert(int layerCnt, const Layers &layers);
+
+  /**
+   *  @brief 在指定位置后插入指定图层容器 (失败时抛出异常)
+   *  @param layerCnt - 指定位置
+   *  @param layers   - 指定图层容器
+   */
+  void insert(int layerCnt,
+              const std::initializer_list<AsciiBasicLayer> &layers);
 
   /**
    *  @brief  获取多图层合并后生成的画布 (失败时抛出异常)
@@ -134,7 +158,7 @@ public:
    *  @param  name - 指定图层名称
    *  @retval      - 指定图层的引用
    */
-  AsciiBasicLayer &operator[](const std::string &name);
+  // AsciiBasicLayer &operator[](const std::string &name);
 
   /**
    *  @brief  获取/修改指定编号的图层 （失败时抛出异常）
@@ -142,83 +166,93 @@ public:
    * （若编号大于等于管理器图层数，则创建并返回新的空图层）
    *  @retval       - 指定编号的图层
    */
-  AsciiBasicLayer &operator[](int index);
+  // AsciiBasicLayer &operator[](int index);
 
   /**
    *  @brief  获取指定名称的图层 （失败时抛出异常）
    *  @param  name - 指定图层名称
    *  @retval      - 指定名称的图层
    */
-  const AsciiBasicLayer &operator[](const std::string &name) const;
+  // const AsciiBasicLayer &operator[](const std::string &name) const;
 
   /**
    *  @brief  获取指定图层的图层 （失败时抛出异常）
    *  @param  index - 指定编号
    *  @retval       - 指定编号的图层
    */
-  const AsciiBasicLayer &operator[](int index) const;
+  // const AsciiBasicLayer &operator[](int index) const;
 
-  bool operator==(const AsciiBasicLayerMngr &mngr) const;
-  bool operator!=(const AsciiBasicLayerMngr &mngr) const;
+  // bool operator==(const AsciiBasicLayerMngr &mngr) const;
+  // bool operator!=(const AsciiBasicLayerMngr &mngr) const;
 
-  AsciiBasicLayerMngr &operator=(const AsciiBasicLayerMngr &mngr);
-  AsciiBasicLayerMngr &operator=(AsciiBasicLayerMngr &&mngr) noexcept;
+  // AsciiBasicLayerMngr &operator=(const AsciiBasicLayerMngr &mngr);
+  // AsciiBasicLayerMngr &operator=(AsciiBasicLayerMngr &&mngr) noexcept;
 
   /**
    *  @brief  获取指定名称的图层 （失败时抛出异常）
    *  @param  name - 指定图层名称
    *  @retval      - 指定名称的图层
    */
-  AsciiBasicLayer getLayer(const std::string &name) const;
+  // AsciiBasicLayer getLayer(const std::string &name) const;
 
   /**
    *  @brief  获取指定编号的图层 （失败时抛出异常）
    *  @param  index - 指定编号
    *  @retval       - 指定编号的图层
    */
-  AsciiBasicLayer getLayer(int index) const { return (*layers)[index]; }
+  // AsciiBasicLayer getLayer(int index) const { return *(*layers)[index]; }
 
   /**
    *  @brief 设置指定名称的图层 （失败时抛出异常）
    *  @param layer - 指定图层
    *  @param name  - 指定图层名称
    */
-  void setLayer(const AsciiBasicLayer &layer, const std::string &name);
+  // void setLayer(const AsciiBasicLayer &layer, const std::string &name);
 
   /**
    *  @brief 设置指定编号的图层 （失败时抛出异常）
    *  @param layer - 指定编号
    *  @param name  - 指定编号名称
    */
-  void setLayer(const AsciiBasicLayer &layer, int index);
+  // void setLayer(const AsciiBasicLayer &layer, int index);
 
   /**
    *  @brief  获取管理器图层数
    *  @retval  - 图层数
    */
-  int size() const { return static_cast<int>(layers->size()); }
+  // int size() const { return static_cast<int>(layers->size()); }
 
   /**
    *  @brief  获取管理器图层容器
    *  @retval  - 包括着所有图层的图层容器
    */
-  Layers getLayers() const { return *layers; }
+  // Layers getLayers() const { return *layers; }
 
   /**
    *  @brief  判断是否存在指定名称的图层
    *  @param  name - 指定图层名称
    *  @retval      - 是否存在指定名称图层的布尔值
    */
-  bool isExistLayer(const std::string &name) const;
+  // bool isExistLayer(const std::string &name) const;
 
   /**
    *  @brief  获取指定图层所在层数 （失败时抛出异常）
    *  @param  name - 指定图层名称
    *  @retval      - 指定名称的图层所在层数
    */
-  int getLayerCount(const std::string &name) const;
+  // int getLayerCount(const std::string &name) const;
 
-private:
-  pLayers layers;
+  virtual void info() const noexcept override;
+
+  virtual std::string toString() const noexcept override;
+
+  // protected:
+  //  获取序列化字符串
+  // std::string getSerializeStr() const override;
+  //  加载序列化字符串
+  // void loadSerializeStr(const std::string &str) override;
+
+  // private:
+  //   pLayers layers;
 };
 } // namespace AsciiGL
